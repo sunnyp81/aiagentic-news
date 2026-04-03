@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GlowCard from '../../components/GlowCard.astro';
+import RainbowButton from '../../components/RainbowButton.astro';
 import { getStoryBySlug, getAllStorySlugs, getStories } from '../../lib/kv';
 import { getCategoryById, toTitleCase } from '../../lib/categories';
 
@@ -131,6 +132,17 @@ const related = allStories
       </div>
       </div>
     </GlowCard>
+
+    <!-- CTA -->
+    <div class="flex items-center justify-center gap-3 my-10 py-8 border-t border-b border-[var(--color-border-subtle)]">
+      <RainbowButton href="/">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+        Browse All Stories
+      </RainbowButton>
+      <RainbowButton href={`/category/${story.category}/`}>
+        More {cat.label}
+      </RainbowButton>
+    </div>
 
     <!-- Related Stories -->
     {related.length > 0 && (

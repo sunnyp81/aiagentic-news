@@ -7,6 +7,7 @@ import StatsBar from '../components/StatsBar.astro';
 import TrendingTags from '../components/TrendingTags.astro';
 import SourceBadges from '../components/SourceBadges.astro';
 import GlowCard from '../components/GlowCard.astro';
+import RainbowButton from '../components/RainbowButton.astro';
 import Marquee from '../components/Marquee.astro';
 import { getStories, getDigests } from '../lib/kv';
 import { categories, toTitleCase } from '../lib/categories';
@@ -45,7 +46,14 @@ const tickerItems = stories.slice(0, 8).map(s => s.title);
         <br />
         <span class="text-[var(--color-text)]">Curated by AI</span>
       </h1>
-      <p class="text-[var(--color-text-muted)] text-lg max-w-lg leading-relaxed">Scraped from 13+ sources. Deduplicated. Synthesized. Delivered every 4 hours — fully automated.</p>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-lg leading-relaxed mb-6">Scraped from 13+ sources. Deduplicated. Synthesized. Delivered every 4 hours — fully automated.</p>
+      <div class="flex items-center gap-3">
+        <RainbowButton href="#stories">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+          Read Today's Stories
+        </RainbowButton>
+        <a href="/about/" class="px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">How it works →</a>
+      </div>
     </div>
   </div>
 
@@ -111,7 +119,7 @@ const tickerItems = stories.slice(0, 8).map(s => s.title);
   <div class="flex items-center gap-4 mb-6">
     <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-      Latest Stories
+      <span id="stories">Latest Stories</span>
     </h2>
     <div class="flex-1 h-px bg-gradient-to-r from-[var(--color-border)] to-transparent"></div>
   </div>
