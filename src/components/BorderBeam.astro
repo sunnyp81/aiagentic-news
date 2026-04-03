@@ -8,7 +8,7 @@ interface Props {
 }
 
 const {
-  size = 80,
+  size = 40,
   duration = 12,
   colorFrom = '#6366f1',
   colorTo = '#a855f7',
@@ -38,12 +38,12 @@ const {
   .border-beam::after {
     content: '';
     position: absolute;
-    aspect-ratio: 1;
     width: calc(var(--bb-size) * 1px);
-    background: linear-gradient(to left, var(--bb-color-from), var(--bb-color-to), transparent);
-    opacity: 0.8;
-    offset-anchor: calc(90%) 50%;
-    offset-path: rect(0 auto auto 0 round calc(var(--bb-size) * 1px));
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--bb-color-from), var(--bb-color-to), transparent);
+    opacity: 0.6;
+    offset-anchor: 50% 50%;
+    offset-path: rect(0 auto auto 0 round 12px);
     animation: border-beam-move calc(var(--bb-duration) * 1s) infinite linear;
     animation-delay: var(--bb-delay);
   }

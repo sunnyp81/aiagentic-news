@@ -1,6 +1,6 @@
 ---
 import type { Story } from '../lib/types';
-import { getCategoryById } from '../lib/categories';
+import { getCategoryById, toTitleCase } from '../lib/categories';
 import GlowCard from './GlowCard.astro';
 
 interface Props {
@@ -40,7 +40,7 @@ const excerpt = story.summary.split('. ').slice(0, 2).join('. ') + '.';
         )}
       </div>
       <h3 class="text-[17px] font-semibold leading-snug mb-3 text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors">
-        {story.title}
+        {toTitleCase(story.title)}
       </h3>
       <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-3 mb-4">{excerpt}</p>
       <div class="flex items-center gap-2 pt-3 border-t border-[var(--color-border-subtle)]">

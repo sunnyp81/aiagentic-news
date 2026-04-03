@@ -18,3 +18,14 @@ export const categories: Category[] = [
 export function getCategoryById(id: CategoryId): Category {
   return categories.find((c) => c.id === id)!;
 }
+
+const minorWords = new Set(['a','an','the','and','but','or','nor','in','on','at','to','for','of','with','by','as','is','it']);
+
+export function toTitleCase(str: string): string {
+  return str.replace(/\b\w+/g, (word, index) => {
+    if (index === 0 || !minorWords.has(word.toLowerCase())) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    return word.toLowerCase();
+  });
+}

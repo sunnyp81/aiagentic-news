@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import BorderBeam from '../../components/BorderBeam.astro';
 import GlowCard from '../../components/GlowCard.astro';
 import { getStoryBySlug, getAllStorySlugs, getStories } from '../../lib/kv';
-import { getCategoryById } from '../../lib/categories';
+import { getCategoryById, toTitleCase } from '../../lib/categories';
 
 export async function getStaticPaths() {
   const slugs = await getAllStorySlugs();
@@ -45,7 +45,7 @@ const related = allStories
   .filter((s) => s.category === story.category && s.slug !== story.slug)
   .slice(0, 3);
 ---
-<Base title={story.title} description={sentences.slice(0, 2).join(' ')} ogType="article">
+<Base title={toTitleCase(story.title)} description={sentences.slice(0, 2).join(' ')} ogType="article">
   <article class="max-w-3xl mx-auto">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 mb-8 text-sm">
@@ -53,7 +53,7 @@ const related = allStories
       <span class="text-[var(--color-text-muted)]">/</span>
       <a href={`/category/${story.category}/`} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors">{cat.label}</a>
       <span class="text-[var(--color-text-muted)]">/</span>
-      <span class="text-[var(--color-text-secondary)] truncate max-w-[200px]">{story.title}</span>
+      <span class="text-[var(--color-text-secondary)] truncate max-w-[200px]">{toTitleCase(story.title)}</span>
     </div>
 
     <!-- Meta bar -->
@@ -76,7 +76,7 @@ const related = allStories
     </div>
 
     <!-- Title -->
-    <h1 class="text-3xl sm:text-[2.5rem] font-extrabold leading-[1.15] mb-10 tracking-tight">{story.title}</h1>
+    <h1 class="text-3xl sm:text-[2.5rem] font-extrabold leading-[1.15] mb-10 tracking-tight">{toTitleCase(story.title)}</h1>
 
     <!-- Article body -->
     <div class="space-y-6 mb-12">

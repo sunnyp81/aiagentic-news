@@ -32,7 +32,7 @@ export async function categorizeAndSummarize(
     }).join('\n\n---\n\n');
 
     const system = `You are a senior tech journalist. For each story, output a JSON array with objects containing:
-- "title": engaging headline (max 80 chars)
+- "title": engaging headline in Title Case (max 80 chars, capitalise first letter of each major word)
 - "summary": 5-8 sentence article. Cover what happened, who is involved, why it matters, and what happens next. Include specific details like numbers, company names, and technical specifics. Write like a real news article, not a tweet.
 - "category": one of ${JSON.stringify(CATEGORIES)}
 - "tags": 3-5 lowercase tags
