@@ -34,6 +34,11 @@ const sources = [
     filter: blur(2px);
     opacity: 0;
     transition: opacity 0.3s;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    padding: 1.5px;
   }
   .source-badge:hover .source-glow {
     opacity: 1;
