@@ -1,0 +1,70 @@
+---
+// Ambient aurora glow orbs with floating animation
+---
+<div class="aurora" aria-hidden="true">
+  <div class="aurora-orb aurora-orb-1"></div>
+  <div class="aurora-orb aurora-orb-2"></div>
+  <div class="aurora-orb aurora-orb-3"></div>
+  <div class="aurora-orb aurora-orb-4"></div>
+</div>
+
+<style>
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .aurora-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.12;
+    animation: aurora-float 20s ease-in-out infinite;
+  }
+  .aurora-orb-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--color-accent);
+    top: -10%;
+    right: -5%;
+    animation-delay: 0s;
+    animation-duration: 25s;
+  }
+  .aurora-orb-2 {
+    width: 400px;
+    height: 400px;
+    background: #a855f7;
+    bottom: -15%;
+    left: -10%;
+    animation-delay: -5s;
+    animation-duration: 30s;
+  }
+  .aurora-orb-3 {
+    width: 350px;
+    height: 350px;
+    background: #06b6d4;
+    top: 40%;
+    right: 15%;
+    animation-delay: -10s;
+    animation-duration: 22s;
+    opacity: 0.08;
+  }
+  .aurora-orb-4 {
+    width: 300px;
+    height: 300px;
+    background: #f59e0b;
+    bottom: 10%;
+    right: 40%;
+    animation-delay: -15s;
+    animation-duration: 28s;
+    opacity: 0.05;
+  }
+  @keyframes aurora-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -20px) scale(1.05); }
+    50% { transform: translate(-20px, 15px) scale(0.95); }
+    75% { transform: translate(15px, 25px) scale(1.02); }
+  }
+</style>

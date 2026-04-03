@@ -1,0 +1,43 @@
+---
+// Animated infinite scrolling grid background
+---
+<div class="grid-bg" aria-hidden="true">
+  <svg class="grid-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" />
+      </pattern>
+    </defs>
+    <rect width="200%" height="200%" fill="url(#grid-pattern)" class="grid-rect" />
+  </svg>
+  <div class="grid-glow"></div>
+</div>
+
+<style>
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    color: var(--color-accent);
+    opacity: 0.07;
+  }
+  .grid-svg {
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    animation: grid-scroll 60s linear infinite;
+  }
+  .grid-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, var(--color-accent-glow) 0%, transparent 70%);
+  }
+  @keyframes grid-scroll {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, 40px); }
+  }
+</style>

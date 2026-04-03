@@ -6,6 +6,8 @@ import StoryCard from '../components/StoryCard.astro';
 import StatsBar from '../components/StatsBar.astro';
 import TrendingTags from '../components/TrendingTags.astro';
 import SourceBadges from '../components/SourceBadges.astro';
+import BorderBeam from '../components/BorderBeam.astro';
+import Marquee from '../components/Marquee.astro';
 import { getStories, getDigests } from '../lib/kv';
 import { categories } from '../lib/categories';
 
@@ -19,27 +21,36 @@ const rest = stories.slice(1);
 const lastUpdated = stories.length > 0
   ? new Date(stories[0].publishedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
   : null;
+
+const tickerItems = stories.slice(0, 8).map(s => s.title);
 ---
 <Base title="Latest AI News">
-  <!-- Hero -->
-  <div class="relative mb-12">
-    <div class="absolute -top-20 -left-20 w-72 h-72 bg-[var(--color-accent)]/5 rounded-full blur-[100px]"></div>
-    <div class="absolute -top-10 right-0 w-56 h-56 bg-purple-500/5 rounded-full blur-[80px]"></div>
-    <div class="relative">
-      <div class="flex items-center gap-3 mb-4">
+  <!-- Hero Section -->
+  <div class="relative mb-14">
+    <div class="relative py-6">
+      <div class="flex items-center gap-3 mb-5">
         {lastUpdated && (
-          <span class="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] px-3 py-1 rounded-full">
+          <span class="inline-flex items-center gap-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-card)]/80 backdrop-blur border border-[var(--color-border-subtle)] px-3 py-1.5 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
             Last updated {lastUpdated} UTC
           </span>
         )}
+        <span class="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-card)]/80 backdrop-blur border border-[var(--color-border-subtle)] px-3 py-1.5 rounded-full">
+          {stories.length} stories today
+        </span>
       </div>
-      <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight mb-3">
-        <span class="bg-gradient-to-r from-[var(--color-accent)] via-purple-400 to-cyan-400 bg-clip-text text-transparent">AI News</span>
-        <span class="text-[var(--color-text)]"> Today</span>
+
+      <h1 class="text-5xl sm:text-7xl font-black tracking-tighter mb-4">
+        <span class="bg-gradient-to-r from-[var(--color-accent)] via-purple-400 to-cyan-400 bg-clip-text text-transparent gradient-text-animate">AI News</span>
+        <br />
+        <span class="text-[var(--color-text)]">Curated by AI</span>
       </h1>
-      <p class="text-[var(--color-text-muted)] text-lg max-w-xl">The latest in artificial intelligence — scraped from 13+ sources, deduplicated, and synthesized by AI every 4 hours.</p>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-lg leading-relaxed">Scraped from 13+ sources. Deduplicated. Synthesized. Delivered every 4 hours — fully automated.</p>
     </div>
   </div>
+
+  <!-- News Ticker -->
+  {tickerItems.length > 0 && <Marquee items={tickerItems} speed={50} />}
 
   <!-- Stats -->
   <StatsBar storyCount={stories.length} sourceCount={13} categoryCount={categories.length} />
@@ -51,21 +62,34 @@ const lastUpdated = stories.length > 0
   <TrendingTags stories={stories} />
 
   <!-- Categories -->
+  <div class="mb-2">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-4 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+      Filter by Category
+    </h2>
+  </div>
   <CategoryChips />
 
-  <!-- Featured Story -->
+  <!-- Featured Story with Border Beam -->
   {featured && (
-    <a href={`/story/${featured.slug}/`} class="group block mb-8">
-      <article class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-card)] via-[var(--color-bg-elevated)] to-[var(--color-bg-card)] p-8 sm:p-10 hover:border-[var(--color-accent)]/40 hover:shadow-[0_0_60px_var(--color-accent-glow)] transition-all duration-500">
-        <div class="absolute top-0 right-0 w-80 h-80 bg-[var(--color-accent)]/3 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
+    <a href={`/story/${featured.slug}/`} class="group block mb-10">
+      <article class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-card)] via-[var(--color-bg-elevated)] to-[var(--color-bg-card)] p-8 sm:p-10 hover:shadow-[0_0_80px_var(--color-accent-glow)] transition-all duration-700">
+        <BorderBeam size={250} duration={10} colorFrom="#6366f1" colorTo="#a855f7" />
+        <div class="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/3 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/3 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/3"></div>
         <div class="relative">
           <div class="flex items-center gap-3 mb-5">
-            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20">Featured</span>
-            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white/90" style={`background-color: var(--color-cat-${featured.category})`}>
+            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20">
+              <span class="inline-flex items-center gap-1">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Featured
+              </span>
+            </span>
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white/90" style={`background-color: var(--color-cat-${featured.category}); box-shadow: 0 0 16px var(--color-cat-${featured.category})30;`}>
               {featured.category}
             </span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-5 text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors tracking-tight">
+          <h2 class="text-2xl sm:text-4xl font-extrabold leading-[1.1] mb-5 text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors tracking-tight">
             {featured.title}
           </h2>
           <p class="text-[var(--color-text-secondary)] leading-relaxed text-base max-w-3xl mb-6">
@@ -78,7 +102,7 @@ const lastUpdated = stories.length > 0
               ))}
             </div>
             <span class="inline-flex items-center gap-1.5 text-sm text-[var(--color-accent)] font-semibold group-hover:gap-3 transition-all">
-              Read story <span class="text-lg">→</span>
+              Read full story <span class="text-lg">→</span>
             </span>
           </div>
         </div>
@@ -86,22 +110,36 @@ const lastUpdated = stories.length > 0
     </a>
   )}
 
-  <!-- Story Grid -->
+  <!-- Section header -->
+  <div class="flex items-center gap-4 mb-6">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+      Latest Stories
+    </h2>
+    <div class="flex-1 h-px bg-gradient-to-r from-[var(--color-border)] to-transparent"></div>
+  </div>
+
+  <!-- Story Grid with staggered animation -->
   <div class="grid gap-5 sm:grid-cols-2">
-    {rest.map((story) => (
-      <StoryCard story={story} />
+    {rest.map((story, i) => (
+      <div class="fade-in-up" style={`animation-delay: ${i * 0.08}s`}>
+        <StoryCard story={story} />
+      </div>
     ))}
   </div>
 
   {stories.length === 0 && (
     <div class="text-center py-24">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] mb-6">
-        <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] mb-6">
+        <svg class="w-10 h-10 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
       </div>
       <p class="text-xl font-semibold text-[var(--color-text)] mb-2">No stories yet</p>
       <p class="text-sm text-[var(--color-text-muted)]">Stories are curated every 4 hours — check back soon</p>
     </div>
   )}
+
+  <!-- Divider -->
+  <div class="my-12 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent"></div>
 
   <!-- Source Badges -->
   <SourceBadges />

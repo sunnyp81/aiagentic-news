@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
+import BorderBeam from '../../components/BorderBeam.astro';
+import GlowCard from '../../components/GlowCard.astro';
 import { getStoryBySlug, getAllStorySlugs, getStories } from '../../lib/kv';
 import { getCategoryById } from '../../lib/categories';
 
@@ -89,7 +91,8 @@ const related = allStories
     </div>
 
     <!-- Sources & Tags -->
-    <div class="rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-6 mb-8">
+    <div class="relative rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-6 mb-8 overflow-hidden">
+      <BorderBeam size={180} duration={15} colorFrom="#6366f1" colorTo="#06b6d4" delay={3} />
       <div class="flex flex-col sm:flex-row gap-6">
         <div class="flex-1">
           <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
@@ -138,7 +141,7 @@ const related = allStories
         </h2>
         <div class="grid gap-3">
           {related.map((r) => (
-            <a href={`/story/${r.slug}/`} class="group flex items-start gap-4 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] hover:border-[var(--color-accent)]/30 transition-all">
+            <a href={`/story/${r.slug}/`} class="group flex items-start gap-4 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] hover:border-[var(--color-accent)]/30 hover:shadow-[0_0_30px_var(--color-accent-glow)] transition-all duration-300">
               <div class="flex-1">
                 <p class="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors leading-snug mb-1">{r.title}</p>
                 <p class="text-xs text-[var(--color-text-muted)] line-clamp-2">{r.summary.split('. ').slice(0, 1).join('. ')}.</p>

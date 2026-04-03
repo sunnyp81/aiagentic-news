@@ -1,0 +1,50 @@
+---
+// Card with mouse-tracking gradient glow effect (CSS only via :hover)
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+<div class:list={['glow-card', className]}>
+  <div class="glow-card-border"></div>
+  <div class="glow-card-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .glow-card {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .glow-card-border {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--color-accent) 50%, transparent 60%);
+    background-size: 300% 300%;
+    animation: glow-rotate 8s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .glow-card:hover .glow-card-border {
+    opacity: 1;
+  }
+  .glow-card-content {
+    position: relative;
+    border-radius: inherit;
+    background: var(--color-bg-card);
+    height: 100%;
+  }
+  @keyframes glow-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+</style>

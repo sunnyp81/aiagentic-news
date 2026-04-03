@@ -1,0 +1,81 @@
+---
+// Scrolling news ticker
+interface Props {
+  items: string[];
+  speed?: number;
+}
+const { items, speed = 40 } = Astro.props;
+const doubled = [...items, ...items];
+---
+<div class="marquee-container">
+  <div class="marquee-label">
+    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    TRENDING
+  </div>
+  <div class="marquee-track" style={`--speed: ${speed}s`}>
+    <div class="marquee-content">
+      {doubled.map((item) => (
+        <span class="marquee-item">
+          <span class="marquee-dot"></span>
+          {item}
+        </span>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-card);
+    margin-bottom: 2.5rem;
+  }
+  .marquee-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    background: var(--color-bg-elevated);
+    border-right: 1px solid var(--color-border-subtle);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .marquee-track {
+    overflow: hidden;
+    flex: 1;
+  }
+  .marquee-content {
+    display: flex;
+    animation: marquee-scroll var(--speed) linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+  .marquee-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>

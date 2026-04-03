@@ -1,0 +1,56 @@
+---
+// Animated gradient border beam effect
+interface Props {
+  size?: number;
+  duration?: number;
+  colorFrom?: string;
+  colorTo?: string;
+  delay?: number;
+  borderWidth?: number;
+}
+
+const {
+  size = 200,
+  duration = 12,
+  colorFrom = '#6366f1',
+  colorTo = '#a855f7',
+  delay = 0,
+  borderWidth = 1.5,
+} = Astro.props;
+---
+<div
+  class="border-beam"
+  style={`--bb-size: ${size}; --bb-duration: ${duration}; --bb-border-width: ${borderWidth}; --bb-color-from: ${colorFrom}; --bb-color-to: ${colorTo}; --bb-delay: -${delay}s;`}
+  aria-hidden="true"
+></div>
+
+<style>
+  .border-beam {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: calc(var(--bb-border-width) * 1px) solid transparent;
+    mask-clip: padding-box, border-box;
+    mask-composite: intersect;
+    -webkit-mask-clip: padding-box, border-box;
+    -webkit-mask-composite: source-in;
+    mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+    -webkit-mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+  }
+  .border-beam::after {
+    content: '';
+    position: absolute;
+    aspect-ratio: 1;
+    width: calc(var(--bb-size) * 1px);
+    background: linear-gradient(to left, var(--bb-color-from), var(--bb-color-to), transparent);
+    offset-anchor: calc(90% ) 50%;
+    offset-path: rect(0 auto auto 0 round calc(var(--bb-size) * 1px));
+    animation: border-beam-move calc(var(--bb-duration) * 1s) infinite linear;
+    animation-delay: var(--bb-delay);
+  }
+  @keyframes border-beam-move {
+    0% { offset-distance: 0%; }
+    100% { offset-distance: 100%; }
+  }
+</style>
