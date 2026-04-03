@@ -7,15 +7,15 @@ crons = ["0 */4 * * *"]
 
 [[kv_namespaces]]
 binding = "STORIES"
-id = "REPLACE_AFTER_CREATE"
+id = "c9269bcbbb514123b5545ea50b86ce72"
 
 [[kv_namespaces]]
 binding = "DIGESTS"
-id = "REPLACE_AFTER_CREATE"
+id = "c0b30cf516c34cb5b0e0919855a49f6b"
 
 [[kv_namespaces]]
 binding = "FEED_STATE"
-id = "REPLACE_AFTER_CREATE"
+id = "f06e8066ce394e28a4a695e6242d0787"
 
 [vars]
 GITHUB_OWNER = "sunnyp81"

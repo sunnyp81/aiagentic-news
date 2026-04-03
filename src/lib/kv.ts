@@ -1,7 +1,8 @@
 import type { Story, Digest } from './types';
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID || '';
-const CF_API_TOKEN = process.env.CF_API_TOKEN || '';
+const CF_API_KEY = process.env.CF_API_KEY || '';
+const CF_EMAIL = process.env.CF_EMAIL || '';
 
 // KV namespace IDs — set after creating namespaces
 const STORIES_NS_ID = process.env.STORIES_NS_ID || '';
@@ -9,14 +10,21 @@ const DIGESTS_NS_ID = process.env.DIGESTS_NS_ID || '';
 
 const KV_BASE = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/storage/kv/namespaces`;
 
+function cfHeaders(): Record<string, string> {
+  return {
+    'X-Auth-Key': CF_API_KEY,
+    'X-Auth-Email': CF_EMAIL,
+  };
+}
+
 async function kvList(nsId: string, prefix?: string): Promise<{ name: string }[]> {
-  if (!CF_API_TOKEN || !nsId) return [];
+  if (!CF_API_KEY || !nsId) return [];
 
   const params = new URLSearchParams({ limit: '1000' });
   if (prefix) params.set('prefix', prefix);
 
   const res = await fetch(`${KV_BASE}/${nsId}/keys?${params}`, {
-    headers: { 'Authorization': `Bearer ${CF_API_TOKEN}` },
+    headers: cfHeaders(),
   });
 
   if (!res.ok) {
@@ -32,7 +40,7 @@ async function kvGet<T>(nsId: string, key: string): Promise<T | null> {
   if (!CF_API_TOKEN || !nsId) return null;
 
   const res = await fetch(`${KV_BASE}/${nsId}/values/${encodeURIComponent(key)}`, {
-    headers: { 'Authorization': `Bearer ${CF_API_TOKEN}` },
+    headers: cfHeaders(),
   });
 
   if (!res.ok) return null;
@@ -74,7 +82,7 @@ const DUMMY_DIGESTS: Digest[] = [
 ];
 
 function useDummyData(): boolean {
-  return !CF_API_TOKEN || !STORIES_NS_ID;
+  return !CF_API_KEY || !CF_ACCOUNT_ID || !STORIES_NS_ID;
 }
 
 export async function getStories(): Promise<Story[]> {
