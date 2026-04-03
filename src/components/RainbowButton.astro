@@ -8,68 +8,29 @@ const { href, class: className = '', target } = Astro.props;
 const Tag = href ? 'a' : 'button';
 ---
 <Tag href={href} target={target} class:list={['rb', className]} rel={target === '_blank' ? 'noopener noreferrer' : undefined}>
-  <span class="rb-text"><slot /></span>
+  <slot />
 </Tag>
 
 <style>
   .rb {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.625rem 1.5rem;
-    background: var(--color-bg-card);
+    padding: 0.625rem 1.25rem;
+    background: var(--color-accent);
     border-radius: 0.625rem;
     border: none;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;
     text-decoration: none;
-    transition: transform 0.15s, box-shadow 0.3s;
-    isolation: isolate;
+    transition: background 0.2s, transform 0.15s;
   }
   .rb:hover {
+    background: var(--color-accent-hover);
     transform: translateY(-1px);
     color: white;
-  }
-  .rb::before,
-  .rb::after {
-    content: '';
-    position: absolute;
-    left: -2px;
-    top: -2px;
-    border-radius: 0.75rem;
-    background: linear-gradient(
-      45deg,
-      #6366f1, #a855f7, #06b6d4, #10b981, #f59e0b,
-      #ef4444, #6366f1, #a855f7, #06b6d4, #10b981
-    );
-    background-size: 400%;
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    z-index: -1;
-    animation: rainbow-shift 12s linear infinite;
-  }
-  .rb::after {
-    filter: blur(12px);
-    opacity: 0.4;
-    transition: opacity 0.3s;
-  }
-  .rb:hover::after {
-    opacity: 0.7;
-  }
-  .rb-text {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  @keyframes rainbow-shift {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
   }
 </style>
