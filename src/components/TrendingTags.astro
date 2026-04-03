@@ -1,0 +1,36 @@
+---
+import type { Story } from '../lib/types';
+
+interface Props {
+  stories: Story[];
+}
+
+const { stories } = Astro.props;
+
+// Count tag frequency
+const tagCounts = new Map<string, number>();
+for (const story of stories) {
+  for (const tag of story.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  }
+}
+const topTags = [...tagCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 12);
+---
+{topTags.length > 0 && (
+  <div class="mb-10">
+    <h3 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-4 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      Trending Topics
+    </h3>
+    <div class="flex flex-wrap gap-2">
+      {topTags.map(([tag, count]) => (
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/30 transition-colors cursor-default">
+          <span class="text-[var(--color-text-muted)]">#</span>{tag}
+          <span class="text-[10px] text-[var(--color-text-muted)] bg-[var(--color-bg)]/50 px-1.5 py-0.5 rounded-full">{count}</span>
+        </span>
+      ))}
+    </div>
+  </div>
+)}

@@ -3,7 +3,11 @@ import Base from '../layouts/Base.astro';
 import DigestPreview from '../components/DigestPreview.astro';
 import CategoryChips from '../components/CategoryChips.astro';
 import StoryCard from '../components/StoryCard.astro';
+import StatsBar from '../components/StatsBar.astro';
+import TrendingTags from '../components/TrendingTags.astro';
+import SourceBadges from '../components/SourceBadges.astro';
 import { getStories, getDigests } from '../lib/kv';
+import { categories } from '../lib/categories';
 
 const stories = await getStories();
 const digests = await getDigests();
@@ -11,49 +15,94 @@ const latestDigest = digests[0];
 
 const featured = stories[0];
 const rest = stories.slice(1);
+
+const lastUpdated = stories.length > 0
+  ? new Date(stories[0].publishedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+  : null;
 ---
 <Base title="Latest AI News">
-  <div class="mb-10">
-    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2">
-      <span class="bg-gradient-to-r from-[var(--color-accent)] to-purple-400 bg-clip-text text-transparent">AI News</span>
-      <span class="text-[var(--color-text)]"> Today</span>
-    </h1>
-    <p class="text-[var(--color-text-muted)] text-lg">Curated from 13+ sources, synthesized every 4 hours</p>
+  <!-- Hero -->
+  <div class="relative mb-12">
+    <div class="absolute -top-20 -left-20 w-72 h-72 bg-[var(--color-accent)]/5 rounded-full blur-[100px]"></div>
+    <div class="absolute -top-10 right-0 w-56 h-56 bg-purple-500/5 rounded-full blur-[80px]"></div>
+    <div class="relative">
+      <div class="flex items-center gap-3 mb-4">
+        {lastUpdated && (
+          <span class="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] px-3 py-1 rounded-full">
+            Last updated {lastUpdated} UTC
+          </span>
+        )}
+      </div>
+      <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight mb-3">
+        <span class="bg-gradient-to-r from-[var(--color-accent)] via-purple-400 to-cyan-400 bg-clip-text text-transparent">AI News</span>
+        <span class="text-[var(--color-text)]"> Today</span>
+      </h1>
+      <p class="text-[var(--color-text-muted)] text-lg max-w-xl">The latest in artificial intelligence — scraped from 13+ sources, deduplicated, and synthesized by AI every 4 hours.</p>
+    </div>
   </div>
 
+  <!-- Stats -->
+  <StatsBar storyCount={stories.length} sourceCount={13} categoryCount={categories.length} />
+
+  <!-- Digest -->
   {latestDigest && <DigestPreview digest={latestDigest} />}
 
+  <!-- Trending Tags -->
+  <TrendingTags stories={stories} />
+
+  <!-- Categories -->
   <CategoryChips />
 
+  <!-- Featured Story -->
   {featured && (
-    <a href={`/story/${featured.slug}/`} class="group block mb-6">
-      <article class="relative bg-gradient-to-br from-[var(--color-bg-card)] to-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-2xl p-8 hover:border-[var(--color-accent)]/40 hover:shadow-[0_0_40px_var(--color-accent-glow)] transition-all duration-300">
-        <span class="inline-block px-3 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider text-white/90 mb-4" style={`background-color: var(--color-cat-${featured.category})`}>
-          {featured.category}
-        </span>
-        <h2 class="text-2xl sm:text-3xl font-bold leading-tight mb-4 text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors">
-          {featured.title}
-        </h2>
-        <p class="text-[var(--color-text-secondary)] leading-relaxed text-base max-w-3xl">
-          {featured.summary.split('. ').slice(0, 3).join('. ')}.
-        </p>
-        <span class="inline-flex items-center gap-1 mt-5 text-sm text-[var(--color-accent)] font-medium group-hover:gap-2 transition-all">
-          Read full story <span class="text-lg">→</span>
-        </span>
+    <a href={`/story/${featured.slug}/`} class="group block mb-8">
+      <article class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-card)] via-[var(--color-bg-elevated)] to-[var(--color-bg-card)] p-8 sm:p-10 hover:border-[var(--color-accent)]/40 hover:shadow-[0_0_60px_var(--color-accent-glow)] transition-all duration-500">
+        <div class="absolute top-0 right-0 w-80 h-80 bg-[var(--color-accent)]/3 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
+        <div class="relative">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20">Featured</span>
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white/90" style={`background-color: var(--color-cat-${featured.category})`}>
+              {featured.category}
+            </span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-5 text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors tracking-tight">
+            {featured.title}
+          </h2>
+          <p class="text-[var(--color-text-secondary)] leading-relaxed text-base max-w-3xl mb-6">
+            {featured.summary.split('. ').slice(0, 3).join('. ')}.
+          </p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              {featured.sources.slice(0, 3).map((src) => (
+                <span class="px-2.5 py-1 rounded-md bg-[var(--color-bg)]/60 border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-muted)]">{src.name}</span>
+              ))}
+            </div>
+            <span class="inline-flex items-center gap-1.5 text-sm text-[var(--color-accent)] font-semibold group-hover:gap-3 transition-all">
+              Read story <span class="text-lg">→</span>
+            </span>
+          </div>
+        </div>
       </article>
     </a>
   )}
 
-  <div class="grid gap-4 sm:grid-cols-2">
+  <!-- Story Grid -->
+  <div class="grid gap-5 sm:grid-cols-2">
     {rest.map((story) => (
       <StoryCard story={story} />
     ))}
   </div>
 
   {stories.length === 0 && (
-    <div class="text-center py-20">
-      <p class="text-2xl text-[var(--color-text-muted)] mb-2">No stories yet</p>
-      <p class="text-sm text-[var(--color-text-muted)]">Check back soon — stories are curated every 4 hours</p>
+    <div class="text-center py-24">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] mb-6">
+        <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+      </div>
+      <p class="text-xl font-semibold text-[var(--color-text)] mb-2">No stories yet</p>
+      <p class="text-sm text-[var(--color-text-muted)]">Stories are curated every 4 hours — check back soon</p>
     </div>
   )}
+
+  <!-- Source Badges -->
+  <SourceBadges />
 </Base>

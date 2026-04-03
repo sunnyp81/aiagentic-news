@@ -17,17 +17,30 @@ const { category } = Astro.props;
 const stories = await getStoriesByCategory(category.id as CategoryId);
 ---
 <Base title={category.label} description={`Latest AI news in ${category.label}`}>
-  <h1 class="text-3xl font-bold mb-6">{category.label}</h1>
+  <div class="relative mb-10">
+    <div class="absolute -top-10 -left-10 w-48 h-48 rounded-full blur-[60px]" style={`background-color: ${category.color}10`}></div>
+    <div class="relative flex items-center gap-4 mb-2">
+      <div class="w-3 h-3 rounded-full" style={`background-color: ${category.color}`}></div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">{category.label}</h1>
+    </div>
+    <p class="text-[var(--color-text-muted)] ml-7">{stories.length} {stories.length === 1 ? 'story' : 'stories'}</p>
+  </div>
 
   <CategoryChips active={category.id} />
 
-  <div class="grid gap-4">
+  <div class="grid gap-5 sm:grid-cols-2">
     {stories.map((story) => (
       <StoryCard story={story} />
     ))}
   </div>
 
   {stories.length === 0 && (
-    <p class="text-center text-[var(--color-text-muted)] py-12">No stories in this category yet.</p>
+    <div class="text-center py-20">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] mb-5">
+        <div class="w-4 h-4 rounded-full" style={`background-color: ${category.color}`}></div>
+      </div>
+      <p class="text-lg font-semibold text-[var(--color-text)] mb-1">No stories yet</p>
+      <p class="text-sm text-[var(--color-text-muted)]">No {category.label.toLowerCase()} stories in the current cycle</p>
+    </div>
   )}
 </Base>

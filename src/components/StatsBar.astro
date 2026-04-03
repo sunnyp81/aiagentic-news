@@ -1,0 +1,26 @@
+---
+interface Props {
+  storyCount: number;
+  sourceCount: number;
+  categoryCount: number;
+}
+
+const { storyCount, sourceCount, categoryCount } = Astro.props;
+---
+<div class="grid grid-cols-3 gap-4 mb-10">
+  <div class="relative overflow-hidden rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-5">
+    <div class="absolute top-0 right-0 w-20 h-20 bg-[var(--color-accent)]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+    <p class="text-3xl font-extrabold text-[var(--color-text)] mb-1">{storyCount}</p>
+    <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider">Stories Today</p>
+  </div>
+  <div class="relative overflow-hidden rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-5">
+    <div class="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+    <p class="text-3xl font-extrabold text-[var(--color-text)] mb-1">{sourceCount}</p>
+    <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider">Sources</p>
+  </div>
+  <div class="relative overflow-hidden rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-5">
+    <div class="absolute top-0 right-0 w-20 h-20 bg-cyan-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+    <p class="text-3xl font-extrabold text-[var(--color-text)] mb-1">{categoryCount}</p>
+    <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider">Categories</p>
+  </div>
+</div>

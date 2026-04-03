@@ -24,36 +24,63 @@ const formattedDate = new Date(digest.publishedAt).toLocaleDateString('en-GB', {
 const topStories = (
   await Promise.all(digest.topStories.map((slug) => getStoryBySlug(slug)))
 ).filter(Boolean);
+
+const wordCount = digest.content.split(/\s+/).length;
+const readTime = Math.max(1, Math.ceil(wordCount / 200));
 ---
 <Base title={digest.title} description={`Daily AI news digest for ${formattedDate}`} ogType="article">
   <article class="max-w-3xl mx-auto">
-    <div class="flex items-center gap-2 mb-4">
-      <span class="text-xs font-medium text-[var(--color-accent)] uppercase tracking-wide">Daily Digest</span>
-      <time class="text-sm text-[var(--color-text-muted)]">{formattedDate}</time>
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 mb-8 text-sm">
+      <a href="/" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors">Home</a>
+      <span class="text-[var(--color-text-muted)]">/</span>
+      <span class="text-[var(--color-text-secondary)]">Daily Digest</span>
     </div>
 
-    <h1 class="text-3xl font-bold mb-8">{digest.title}</h1>
+    <!-- Header -->
+    <div class="relative mb-10">
+      <div class="absolute -top-10 -left-10 w-48 h-48 bg-[var(--color-accent)]/5 rounded-full blur-[60px]"></div>
+      <div class="relative">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[var(--color-accent)]/10 text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wider">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+            Daily Digest
+          </span>
+          <span class="text-sm text-[var(--color-text-muted)]">{readTime} min read</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight mb-3">{digest.title}</h1>
+        <p class="text-sm text-[var(--color-text-muted)]">{formattedDate}</p>
+      </div>
+    </div>
 
-    <div class="prose prose-invert max-w-none text-[var(--color-text-muted)] leading-relaxed space-y-4" set:html={digest.content.replace(/\n/g, '<br/>')} />
+    <!-- Content -->
+    <div class="prose-custom space-y-5 mb-12 text-[var(--color-text-secondary)] leading-[1.85]" set:html={digest.content
+      .replace(/## (.*)/g, '<h2 class="text-xl font-bold text-[var(--color-text)] mt-10 mb-4">$1</h2>')
+      .replace(/### (.*)/g, '<h3 class="text-lg font-semibold text-[var(--color-text)] mt-8 mb-3">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-[var(--color-text)] font-semibold">$1</strong>')
+      .replace(/\n\n/g, '</p><p class="leading-[1.85]">')
+      .replace(/\n/g, '<br/>')
+    } />
 
+    <!-- Stories in this digest -->
     {topStories.length > 0 && (
-      <div class="border-t border-[var(--color-border)] pt-6 mt-8">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Stories in this digest</h2>
-        <ul class="space-y-2">
-          {topStories.map((story) => (
-            <li>
-              <a href={`/story/${story!.slug}/`} class="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">
-                {story!.title}
-              </a>
-            </li>
+      <div class="rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-6 mb-8">
+        <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-4">Stories covered</h2>
+        <div class="grid gap-2">
+          {topStories.map((story, i) => (
+            <a href={`/story/${story!.slug}/`} class="group flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--color-bg-hover)] transition-colors">
+              <span class="text-xs text-[var(--color-text-muted)] font-medium w-5">{i + 1}.</span>
+              <span class="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-accent)] transition-colors">{story!.title}</span>
+              <span class="ml-auto text-[var(--color-text-muted)] group-hover:text-[var(--color-accent)] text-sm">→</span>
+            </a>
           ))}
-        </ul>
+        </div>
       </div>
     )}
 
-    <div class="mt-8">
-      <a href="/" class="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">← Back to all stories</a>
-    </div>
+    <a href="/" class="inline-flex items-center gap-2 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors">
+      <span>←</span> All stories
+    </a>
   </article>
 
   <script type="application/ld+json" set:html={JSON.stringify({

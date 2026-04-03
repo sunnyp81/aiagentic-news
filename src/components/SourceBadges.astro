@@ -1,0 +1,17 @@
+---
+const sources = [
+  'TechCrunch', 'The Verge', 'Ars Technica', 'Wired', 'The Decoder',
+  'VentureBeat', 'MIT Tech Review', 'OpenAI', 'DeepMind', 'arXiv',
+  'Hacker News', 'Reddit',
+];
+---
+<div class="py-6 border-t border-b border-[var(--color-border-subtle)] mb-10">
+  <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-widest mb-3">Aggregating from</p>
+  <div class="flex flex-wrap gap-2">
+    {sources.map((name) => (
+      <span class="px-2.5 py-1 rounded-md bg-[var(--color-bg)]/60 border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-muted)] font-medium">
+        {name}
+      </span>
+    ))}
+  </div>
+</div>

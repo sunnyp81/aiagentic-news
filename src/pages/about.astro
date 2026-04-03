@@ -1,22 +1,110 @@
 ---
 import Base from '../layouts/Base.astro';
+import { categories } from '../lib/categories';
 ---
-<Base title="About" description="How AI Agentic News works — automated AI news curation from 14+ sources.">
-  <h1 class="text-3xl font-bold mb-6">About AI Agentic News</h1>
-  <div class="prose prose-invert max-w-none space-y-4 text-[var(--color-text-muted)]">
-    <p class="text-lg">AI Agentic News is an automated news curation platform that aggregates, deduplicates, and synthesizes AI news from across the web every 4 hours.</p>
-    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">Sources</h2>
-    <p>We pull from 14+ sources including TechCrunch, The Verge, Ars Technica, Wired, MIT Technology Review, arXiv, Hacker News, Reddit, and AI company blogs from OpenAI, Anthropic, and Google DeepMind.</p>
-    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">How It Works</h2>
-    <p>A Cloudflare Worker runs every 4 hours, fetching the latest from all sources. Claude AI deduplicates overlapping stories, categorises them, and writes concise summaries. At midnight, a daily digest synthesizes the top stories into a long-form article. The site rebuilds automatically and deploys to Cloudflare Pages.</p>
-    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">Categories</h2>
-    <ul class="list-disc pl-6 space-y-1">
-      <li><strong>Models & Research</strong> — new model releases, benchmarks, papers</li>
-      <li><strong>Agents & Autonomy</strong> — agentic AI, tool use, autonomous systems</li>
-      <li><strong>Industry & Business</strong> — funding, acquisitions, enterprise adoption</li>
-      <li><strong>Tools & Frameworks</strong> — developer tools, SDKs, open source</li>
-      <li><strong>Policy & Ethics</strong> — regulation, safety, governance</li>
-      <li><strong>Hardware & Infrastructure</strong> — chips, data centres, compute</li>
-    </ul>
+<Base title="About" description="How AI Agentic News works — automated AI news curation from 13+ sources.">
+  <div class="max-w-3xl mx-auto">
+    <!-- Hero -->
+    <div class="relative mb-12">
+      <div class="absolute -top-10 -left-10 w-48 h-48 bg-[var(--color-accent)]/5 rounded-full blur-[60px]"></div>
+      <div class="relative">
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
+          About <span class="bg-gradient-to-r from-[var(--color-accent)] to-purple-400 bg-clip-text text-transparent">AI Agentic</span>
+        </h1>
+        <p class="text-lg text-[var(--color-text-secondary)] leading-relaxed max-w-xl">An automated news curation platform that aggregates, deduplicates, and synthesizes AI news from across the web every 4 hours.</p>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="mb-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-6 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        How It Works
+      </h2>
+      <div class="grid gap-4">
+        {[
+          { step: '01', title: 'Scrape', desc: 'A Cloudflare Worker runs every 4 hours, pulling RSS feeds and APIs from 13+ sources including TechCrunch, The Verge, arXiv, Hacker News, and Reddit.' },
+          { step: '02', title: 'Deduplicate', desc: 'Fuzzy title matching and URL deduplication groups overlapping coverage of the same story from multiple outlets into a single entry.' },
+          { step: '03', title: 'Synthesize', desc: 'Cloudflare Workers AI categorises each story, generates an engaging headline, and writes a multi-paragraph summary covering what happened and why it matters.' },
+          { step: '04', title: 'Publish', desc: 'Stories are stored in Cloudflare KV, the site rebuilds automatically via GitHub Actions, and deploys to Cloudflare Pages — fully serverless.' },
+        ].map(({ step, title, desc }) => (
+          <div class="flex gap-5 p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)]">
+            <span class="text-2xl font-extrabold text-[var(--color-accent)]/30 shrink-0">{step}</span>
+            <div>
+              <h3 class="font-semibold text-[var(--color-text)] mb-1">{title}</h3>
+              <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="mb-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-6 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+        Sources
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { name: 'TechCrunch', type: 'RSS' },
+          { name: 'The Verge', type: 'RSS' },
+          { name: 'Ars Technica', type: 'RSS' },
+          { name: 'Wired', type: 'RSS' },
+          { name: 'The Decoder', type: 'RSS' },
+          { name: 'VentureBeat', type: 'RSS' },
+          { name: 'MIT Tech Review', type: 'RSS' },
+          { name: 'OpenAI Blog', type: 'RSS' },
+          { name: 'Google DeepMind', type: 'RSS' },
+          { name: 'arXiv cs.AI', type: 'RSS' },
+          { name: 'Hacker News', type: 'API' },
+          { name: 'Reddit', type: 'API' },
+        ].map(({ name, type }) => (
+          <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)]">
+            <span class="text-sm text-[var(--color-text-secondary)]">{name}</span>
+            <span class="text-[10px] text-[var(--color-text-muted)] bg-[var(--color-bg)]/60 px-1.5 py-0.5 rounded">{type}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="mb-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-6 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        Categories
+      </h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        {[
+          { cat: categories[0], desc: 'New model releases, benchmarks, research papers' },
+          { cat: categories[1], desc: 'Agentic AI, tool use, autonomous systems' },
+          { cat: categories[2], desc: 'Funding, acquisitions, enterprise adoption' },
+          { cat: categories[3], desc: 'Developer tools, SDKs, open source projects' },
+          { cat: categories[4], desc: 'Regulation, safety, AI governance' },
+          { cat: categories[5], desc: 'Chips, data centres, compute infrastructure' },
+        ].map(({ cat, desc }) => (
+          <a href={`/category/${cat.id}/`} class="group flex items-start gap-3 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] hover:border-[var(--color-accent)]/30 transition-all">
+            <div class="w-2 h-2 rounded-full mt-1.5 shrink-0" style={`background-color: ${cat.color}`}></div>
+            <div>
+              <p class="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent-hover)] transition-colors">{cat.label}</p>
+              <p class="text-xs text-[var(--color-text-muted)] mt-0.5">{desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] p-6">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-4 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        Built With
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        {['Astro', 'Tailwind CSS', 'Cloudflare Workers', 'Workers AI', 'Cloudflare KV', 'Cloudflare Pages', 'GitHub Actions'].map((tech) => (
+          <span class="px-3 py-1.5 rounded-lg bg-[var(--color-bg)]/60 border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-secondary)]">{tech}</span>
+        ))}
+      </div>
+    </div>
   </div>
 </Base>
