@@ -4,14 +4,17 @@ const navLinks = [
   { href: '/about/', label: 'About' },
 ];
 ---
-<header class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
-  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-    <a href="/" class="text-xl font-bold text-[var(--color-text)] hover:text-[var(--color-accent)]">
-      <span class="text-[var(--color-accent)]">AI</span>Agentic<span class="text-[var(--color-text-muted)]">.news</span>
+<header class="sticky top-0 z-50 backdrop-blur-xl bg-[var(--color-bg)]/80 border-b border-[var(--color-border)]">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 group">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-purple-500 flex items-center justify-center text-white font-extrabold text-sm">AI</div>
+      <span class="text-lg font-bold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+        Agentic<span class="text-[var(--color-text-muted)] font-normal">.news</span>
+      </span>
     </a>
-    <nav class="flex gap-6">
+    <nav class="flex items-center gap-1">
       {navLinks.map(({ href, label }) => (
-        <a href={href} class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]">{label}</a>
+        <a href={href} class="px-3 py-1.5 rounded-lg text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-all">{label}</a>
       ))}
     </nav>
   </div>

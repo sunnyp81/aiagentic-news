@@ -21,56 +21,86 @@ const date = new Date(story.publishedAt).toLocaleDateString('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
+});
+const time = new Date(story.publishedAt).toLocaleTimeString('en-GB', {
   hour: '2-digit',
   minute: '2-digit',
 });
+
+// Split summary into paragraphs at sentence boundaries (every 2-3 sentences)
+const sentences = story.summary.split(/(?<=\.)\s+/);
+const paragraphs: string[] = [];
+for (let i = 0; i < sentences.length; i += 3) {
+  paragraphs.push(sentences.slice(i, i + 3).join(' '));
+}
 ---
-<Base title={story.title} description={story.summary} ogType="article">
+<Base title={story.title} description={sentences.slice(0, 2).join(' ')} ogType="article">
   <article class="max-w-3xl mx-auto">
-    <div class="flex items-center gap-3 mb-4">
+    <a href="/" class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] mb-8 transition-colors">
+      <span>←</span> Back to stories
+    </a>
+
+    <div class="flex flex-wrap items-center gap-3 mb-5">
       <span
-        class="px-2 py-0.5 rounded text-xs font-medium text-white"
+        class="px-3 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider text-white/90"
         style={`background-color: ${cat.color}`}
       >
         {cat.label}
       </span>
-      <time class="text-sm text-[var(--color-text-muted)]">{date}</time>
+      <span class="text-sm text-[var(--color-text-muted)]">{date}</span>
+      <span class="text-sm text-[var(--color-text-muted)]">·</span>
+      <span class="text-sm text-[var(--color-text-muted)]">{time}</span>
     </div>
 
-    <h1 class="text-3xl font-bold mb-4">{story.title}</h1>
+    <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-8 tracking-tight">{story.title}</h1>
 
-    <p class="text-lg text-[var(--color-text-muted)] mb-6 leading-relaxed italic">{story.summary}</p>
+    <div class="space-y-5 mb-10">
+      {paragraphs.map((para, i) => (
+        <p class:list={[
+          'leading-[1.8]',
+          i === 0 ? 'text-lg text-[var(--color-text-secondary)]' : 'text-base text-[var(--color-text-secondary)]',
+        ]}>
+          {para}
+        </p>
+      ))}
+    </div>
 
-    {story.content && (
-      <div class="prose prose-invert max-w-none text-[var(--color-text-muted)] leading-relaxed space-y-4 mb-8" set:html={story.content.replace(/\n/g, '<br/>')} />
-    )}
-
-    <div class="border-t border-[var(--color-border)] pt-6">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Sources</h2>
-      <ul class="space-y-2">
-        {story.sources.map((src) => (
-          <li>
-            <a href={src.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">
-              <span>→</span>
-              <span>{src.name}</span>
+    <div class="flex flex-col sm:flex-row gap-6 py-6 border-t border-b border-[var(--color-border)]">
+      <div class="flex-1">
+        <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3">Sources</h2>
+        <div class="flex flex-wrap gap-2">
+          {story.sources.map((src) => (
+            <a
+              href={src.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)] transition-all"
+            >
+              <span class="text-xs">↗</span>
+              {src.name}
             </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    {story.tags.length > 0 && (
-      <div class="mt-6 flex flex-wrap gap-2">
-        {story.tags.map((tag) => (
-          <span class="px-2 py-1 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded text-xs text-[var(--color-text-muted)]">
-            #{tag}
-          </span>
-        ))}
+          ))}
+        </div>
       </div>
-    )}
+
+      {story.tags.length > 0 && (
+        <div>
+          <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3">Tags</h2>
+          <div class="flex flex-wrap gap-2">
+            {story.tags.map((tag) => (
+              <span class="px-2.5 py-1 rounded-md bg-[var(--color-bg-card)] text-xs text-[var(--color-text-muted)]">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
 
     <div class="mt-8">
-      <a href="/" class="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">← Back to all stories</a>
+      <a href="/" class="inline-flex items-center gap-1.5 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors">
+        <span>←</span> More stories
+      </a>
     </div>
   </article>
 
@@ -78,7 +108,7 @@ const date = new Date(story.publishedAt).toLocaleDateString('en-GB', {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     "headline": story.title,
-    "description": story.summary,
+    "description": sentences.slice(0, 2).join(' '),
     "datePublished": story.publishedAt,
     "author": { "@type": "Organization", "name": "AI Agentic News" },
     "publisher": { "@type": "Organization", "name": "AI Agentic News", "url": "https://aiagentic.news" },
