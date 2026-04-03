@@ -17,6 +17,9 @@ id = "c0b30cf516c34cb5b0e0919855a49f6b"
 binding = "FEED_STATE"
 id = "f06e8066ce394e28a4a695e6242d0787"
 
+[ai]
+binding = "AI"
+
 [vars]
 GITHUB_OWNER = "sunnyp81"
 GITHUB_REPO = "aiagentic-news"

@@ -29,7 +29,7 @@ export interface Env {
   STORIES: KVNamespace;
   DIGESTS: KVNamespace;
   FEED_STATE: KVNamespace;
-  ANTHROPIC_API_KEY: string;
+  AI: Ai;
   GITHUB_PAT: string;
   GITHUB_OWNER: string;
   GITHUB_REPO: string;

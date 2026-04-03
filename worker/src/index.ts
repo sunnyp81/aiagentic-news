@@ -112,10 +112,10 @@ export default {
     const groups = deduplicateItems(rawItems);
     console.log(`Deduplicated into ${groups.length} story groups`);
 
-    // 3. Categorize and summarize via Claude
+    // 3. Categorize and summarize via Workers AI
     let stories: Story[];
     try {
-      stories = await categorizeAndSummarize(env.ANTHROPIC_API_KEY, groups);
+      stories = await categorizeAndSummarize(env.AI, groups);
       console.log(`Synthesized ${stories.length} stories`);
     } catch (err) {
       console.error('Synthesis failed:', err);
@@ -136,7 +136,7 @@ export default {
     // 5. At midnight, generate daily digest
     if (isMidnightRun()) {
       try {
-        const digest = await generateDigest(env.ANTHROPIC_API_KEY, stories, today);
+        const digest = await generateDigest(env.AI, stories, today);
         await env.DIGESTS.put(today, JSON.stringify(digest));
         console.log(`Daily digest generated for ${today}`);
       } catch (err) {

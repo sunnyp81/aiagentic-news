@@ -1,51 +1,24 @@
 import type { RawItem, Story, Digest } from './types';
 
-interface ClaudeMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface ClaudeResponse {
-  content: { type: string; text: string }[];
-}
-
-async function callClaude(
-  apiKey: string,
-  model: string,
-  system: string,
-  messages: ClaudeMessage[]
-): Promise<string> {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 4096,
-      system,
-      messages,
-    }),
+async function runAI(ai: Ai, prompt: string, system: string): Promise<string> {
+  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct-fp8', {
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: prompt },
+    ],
+    max_tokens: 4096,
   });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Claude API error ${res.status}: ${err}`);
-  }
-
-  const data: ClaudeResponse = await res.json();
-  return data.content[0].text;
+  return (response as { response: string }).response;
 }
 
 export async function categorizeAndSummarize(
-  apiKey: string,
+  ai: Ai,
   groups: RawItem[][]
 ): Promise<Story[]> {
   const CATEGORIES = ['models', 'agents', 'industry', 'tools', 'policy', 'hardware'];
 
-  // Batch all groups into one API call for efficiency
+  // Batch all groups into one call for efficiency
   const prompt = groups.map((group, i) => {
     const titles = group.map((item) => `- "${item.title}" (${item.source})`).join('\n');
     const summaries = group.map((item) => item.summary).filter(Boolean).join(' ');
@@ -58,23 +31,25 @@ export async function categorizeAndSummarize(
 - "category": one of ${JSON.stringify(CATEGORIES)}
 - "tags": 2-5 lowercase tags
 
-Output ONLY valid JSON array, no markdown fences.`;
+Output ONLY valid JSON array, no markdown fences, no extra text.`;
 
-  const raw = await callClaude(apiKey, 'claude-haiku-4-5-20251001', system, [
-    { role: 'user', content: prompt },
-  ]);
+  const raw = await runAI(ai, prompt, system);
 
   // Parse JSON — handle potential markdown fences
   const jsonStr = raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-  const parsed = JSON.parse(jsonStr) as Array<{
-    title: string;
-    summary: string;
-    category: string;
-    tags: string[];
-  }>;
+
+  let parsed: Array<{ title: string; summary: string; category: string; tags: string[] }>;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch {
+    // If batch parsing fails, try to extract JSON array
+    const match = jsonStr.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error('Failed to parse AI response as JSON');
+    parsed = JSON.parse(match[0]);
+  }
 
   return parsed.map((item, i) => {
-    const group = groups[i];
+    const group = groups[i] || groups[groups.length - 1];
     const slug = item.title
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
@@ -88,7 +63,7 @@ Output ONLY valid JSON array, no markdown fences.`;
       summary: item.summary,
       sources: group.map((g) => ({ name: g.source, url: g.url })),
       category: CATEGORIES.includes(item.category) ? item.category : 'industry',
-      tags: item.tags,
+      tags: item.tags || [],
       publishedAt: group[0].publishedAt,
       image: null,
     };
@@ -96,7 +71,7 @@ Output ONLY valid JSON array, no markdown fences.`;
 }
 
 export async function generateDigest(
-  apiKey: string,
+  ai: Ai,
   stories: Story[],
   date: string
 ): Promise<Digest> {
@@ -107,9 +82,11 @@ export async function generateDigest(
 
   const system = `You are a senior AI journalist writing a daily news digest. Write an 800-1200 word article synthesizing the day's top AI stories into a coherent narrative. Use markdown headings (##) to organize sections. Be insightful, connect themes across stories, and explain why each development matters. Write in a professional but engaging tone.`;
 
-  const content = await callClaude(apiKey, 'claude-sonnet-4-6', system, [
-    { role: 'user', content: `Write the daily AI digest for ${date}. Today's top stories:\n\n${storyList}` },
-  ]);
+  const content = await runAI(
+    ai,
+    `Write the daily AI digest for ${date}. Today's top stories:\n\n${storyList}`,
+    system
+  );
 
   const formattedDate = new Date(date).toLocaleDateString('en-GB', {
     day: 'numeric',
