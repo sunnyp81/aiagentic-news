@@ -2,10 +2,10 @@
 // Floating particle dots animation
 ---
 <div class="particles" aria-hidden="true">
-  {Array.from({ length: 30 }).map((_, i) => (
+  {Array.from({ length: 18 }).map((_, i) => (
     <div
       class="particle"
-      style={`--x: ${Math.random() * 100}%; --y: ${Math.random() * 100}%; --duration: ${15 + Math.random() * 25}s; --delay: ${-Math.random() * 20}s; --size: ${1 + Math.random() * 2}px; --opacity: ${0.1 + Math.random() * 0.3};`}
+      style={`--x: ${Math.random() * 100}%; --y: ${Math.random() * 100}%; --duration: ${20 + Math.random() * 30}s; --delay: ${-Math.random() * 20}s; --size: ${0.8 + Math.random() * 1.2}px; --opacity: ${0.06 + Math.random() * 0.14};`}
     />
   ))}
 </div>

@@ -73,10 +73,9 @@ const tickerItems = stories.slice(0, 8).map(s => s.title);
   <!-- Featured Story with Border Beam -->
   {featured && (
     <a href={`/story/${featured.slug}/`} class="group block mb-10">
-      <article class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-card)] via-[var(--color-bg-elevated)] to-[var(--color-bg-card)] p-8 sm:p-10 hover:shadow-[0_0_80px_var(--color-accent-glow)] transition-all duration-700">
-        <BorderBeam size={250} duration={10} colorFrom="#6366f1" colorTo="#a855f7" />
-        <div class="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/3 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/3 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/3"></div>
+      <article class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-card)] via-[var(--color-bg-elevated)] to-[var(--color-bg-card)] p-8 sm:p-10 hover:shadow-[0_0_40px_var(--color-accent-glow)] transition-all duration-700">
+        <BorderBeam size={70} duration={14} colorFrom="#6366f1" colorTo="#a855f7" />
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--color-accent)]/[0.02] rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
         <div class="relative">
           <div class="flex items-center gap-3 mb-5">
             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20">
