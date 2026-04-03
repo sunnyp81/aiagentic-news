@@ -12,26 +12,86 @@ const { active = null } = Astro.props;
   <a
     href="/"
     class:list={[
-      'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
-      !active
-        ? 'bg-[var(--color-accent)] text-white shadow-[0_0_20px_var(--color-accent-glow)]'
-        : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-accent)]/30 hover:text-[var(--color-text)]',
+      'chip group',
+      !active ? 'chip-active' : '',
     ]}
   >
-    All
+    <span class="chip-glow" aria-hidden="true"></span>
+    <span class="chip-inner" class:list={[!active ? 'chip-inner-active' : '']}>All</span>
   </a>
   {categories.map((cat) => (
     <a
       href={`/category/${cat.id}/`}
       class:list={[
-        'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
-        active === cat.id
-          ? 'text-white shadow-lg'
-          : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-accent)]/30 hover:text-[var(--color-text)]',
+        'chip group',
+        active === cat.id ? 'chip-active' : '',
       ]}
-      style={active === cat.id ? `background-color: ${cat.color}` : ''}
     >
-      {cat.label}
+      <span class="chip-glow" aria-hidden="true"></span>
+      <span
+        class:list={['chip-inner', active === cat.id ? 'chip-inner-active' : '']}
+        style={active === cat.id ? `background-color: ${cat.color}; border-color: transparent;` : ''}
+      >
+        {cat.label}
+      </span>
     </a>
   ))}
 </div>
+
+<style>
+  .chip {
+    position: relative;
+    display: inline-block;
+    border-radius: 0.5rem;
+    isolation: isolate;
+  }
+  .chip-glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    overflow: hidden;
+    z-index: -1;
+    filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .chip:hover .chip-glow {
+    opacity: 1;
+  }
+  .chip-glow::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(60deg);
+    background: conic-gradient(#000, #402fb5 5%, #000 38%, #000 50%, #cf30aa 60%, #000 87%);
+    transition: transform 1.5s ease;
+  }
+  .chip:hover .chip-glow::before {
+    transform: translate(-50%, -50%) rotate(-120deg);
+  }
+  .chip-inner {
+    position: relative;
+    display: block;
+    padding: 0.375rem 1rem;
+    border-radius: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-subtle);
+    transition: all 0.3s;
+    z-index: 1;
+  }
+  .chip:hover .chip-inner {
+    color: var(--color-text);
+    border-color: transparent;
+  }
+  .chip-inner-active {
+    background: var(--color-accent);
+    color: white;
+    border-color: transparent;
+  }
+</style>

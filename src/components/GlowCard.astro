@@ -1,50 +1,107 @@
 ---
-// Card with mouse-tracking gradient glow effect (CSS only via :hover)
 interface Props {
   class?: string;
+  tag?: string;
+  href?: string;
 }
-const { class: className = '' } = Astro.props;
+const { class: className = '', tag = 'div', href } = Astro.props;
+const Tag = tag as any;
 ---
-<div class:list={['glow-card', className]}>
-  <div class="glow-card-border"></div>
-  <div class="glow-card-content">
+<Tag class:list={['glow-wrap group', className]} href={href}>
+  <!-- Outer glow layer -->
+  <div class="glow-border glow-border-outer" aria-hidden="true"></div>
+  <!-- Inner sharp border -->
+  <div class="glow-border glow-border-inner" aria-hidden="true"></div>
+  <!-- Content -->
+  <div class="glow-content">
     <slot />
   </div>
-</div>
+</Tag>
 
 <style>
-  .glow-card {
+  .glow-wrap {
     position: relative;
-    border-radius: 1rem;
-    overflow: hidden;
+    display: block;
+    border-radius: 0.75rem;
+    isolation: isolate;
   }
-  .glow-card-border {
+
+  .glow-border {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, transparent 30%, var(--color-accent)/50 50%, transparent 70%);
-    background-size: 400% 400%;
-    animation: glow-rotate 6s linear infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
   }
-  .glow-card:hover .glow-card-border {
+
+  /* Outer soft glow */
+  .glow-border-outer {
+    inset: -1px;
+    filter: blur(3px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .glow-wrap:hover .glow-border-outer {
     opacity: 1;
   }
-  .glow-card-content {
+  .glow-border-outer::before {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(60deg);
+    background: conic-gradient(
+      #000, #402fb5 5%, #000 38%,
+      #000 50%, #cf30aa 60%, #000 87%
+    );
+    transition: transform 2s ease;
+  }
+  .glow-wrap:hover .glow-border-outer::before {
+    transform: translate(-50%, -50%) rotate(-120deg);
+  }
+
+  /* Inner crisp border */
+  .glow-border-inner {
+    inset: 0;
+    filter: blur(0.5px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .glow-wrap:hover .glow-border-inner {
+    opacity: 1;
+  }
+  .glow-border-inner::before {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(70deg);
+    background: conic-gradient(
+      #0a0e17, #402fb5 5%, #0a0e17 14%,
+      #0a0e17 50%, #cf30aa 60%, #0a0e17 64%
+    );
+    transition: transform 2s ease;
+  }
+  .glow-wrap:hover .glow-border-inner::before {
+    transform: translate(-50%, -50%) rotate(-110deg);
+  }
+
+  .glow-content {
     position: relative;
     border-radius: inherit;
     background: var(--color-bg-card);
     height: 100%;
+    z-index: 1;
+    /* Subtle default border when not hovered */
+    border: 1px solid var(--color-border-subtle);
+    transition: border-color 0.4s ease;
   }
-  @keyframes glow-rotate {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  .glow-wrap:hover .glow-content {
+    border-color: transparent;
   }
 </style>

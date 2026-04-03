@@ -9,9 +9,64 @@ const sources = [
   <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-widest mb-3">Aggregating from</p>
   <div class="flex flex-wrap gap-2">
     {sources.map((name) => (
-      <span class="px-2.5 py-1 rounded-md bg-[var(--color-bg)]/60 border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-muted)] font-medium">
-        {name}
+      <span class="source-badge group">
+        <span class="source-glow" aria-hidden="true"></span>
+        <span class="source-inner">{name}</span>
       </span>
     ))}
   </div>
 </div>
+
+<style>
+  .source-badge {
+    position: relative;
+    display: inline-block;
+    border-radius: 0.375rem;
+    isolation: isolate;
+    cursor: default;
+  }
+  .source-glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    overflow: hidden;
+    z-index: -1;
+    filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .source-badge:hover .source-glow {
+    opacity: 1;
+  }
+  .source-glow::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(60deg);
+    background: conic-gradient(#000, #402fb5 5%, #000 38%, #000 50%, #cf30aa 60%, #000 87%);
+    transition: transform 1.5s ease;
+  }
+  .source-badge:hover .source-glow::before {
+    transform: translate(-50%, -50%) rotate(-120deg);
+  }
+  .source-inner {
+    position: relative;
+    display: block;
+    padding: 0.25rem 0.625rem;
+    border-radius: inherit;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-subtle);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .source-badge:hover .source-inner {
+    color: var(--color-text-secondary);
+    border-color: transparent;
+  }
+</style>
