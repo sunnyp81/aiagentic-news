@@ -10,6 +10,7 @@ export interface Story {
   slug: string;
   title: string;
   summary: string;
+  content: string;
   sources: { name: string; url: string }[];
   category: string;
   tags: string[];

@@ -39,7 +39,11 @@ const date = new Date(story.publishedAt).toLocaleDateString('en-GB', {
 
     <h1 class="text-3xl font-bold mb-4">{story.title}</h1>
 
-    <p class="text-lg text-[var(--color-text-muted)] mb-8 leading-relaxed">{story.summary}</p>
+    <p class="text-lg text-[var(--color-text-muted)] mb-6 leading-relaxed italic">{story.summary}</p>
+
+    {story.content && (
+      <div class="prose prose-invert max-w-none text-[var(--color-text-muted)] leading-relaxed space-y-4 mb-8" set:html={story.content.replace(/\n/g, '<br/>')} />
+    )}
 
     <div class="border-t border-[var(--color-border)] pt-6">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Sources</h2>

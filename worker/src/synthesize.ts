@@ -17,11 +17,8 @@ export async function categorizeAndSummarize(
   groups: RawItem[][]
 ): Promise<Story[]> {
   const CATEGORIES = ['models', 'agents', 'industry', 'tools', 'policy', 'hardware'];
-
-  // Limit to top 30 groups to stay within context window
-  const topGroups = groups.slice(0, 30);
-
-  // Process in batches of 10 to avoid context limit
+  // Single batch of 10 — keeps within waitUntil time limit
+  const topGroups = groups.slice(0, 10);
   const BATCH_SIZE = 10;
   const allStories: Story[] = [];
 
@@ -31,37 +28,41 @@ export async function categorizeAndSummarize(
     const prompt = batch.map((group, j) => {
       const titles = group.map((item) => `- "${item.title}" (${item.source})`).join('\n');
       const summaries = group.map((item) => item.summary).filter(Boolean).join(' ');
-      return `Story ${j + 1}:\nTitles:\n${titles}\nContext: ${summaries.slice(0, 300)}`;
+      return `Story ${j + 1}:\nTitles:\n${titles}\nContext: ${summaries.slice(0, 500)}`;
     }).join('\n\n---\n\n');
 
-    const system = `You are a news editor for an AI news site. For each story group, output a JSON array with one object per story containing:
-- "title": a clear, engaging headline (not copied from any source)
-- "summary": 2-3 sentence synthesis of the story
+    const system = `You are a senior tech journalist. For each story, output a JSON array with objects containing:
+- "title": engaging headline (max 80 chars)
+- "summary": 5-8 sentence article. Cover what happened, who is involved, why it matters, and what happens next. Include specific details like numbers, company names, and technical specifics. Write like a real news article, not a tweet.
 - "category": one of ${JSON.stringify(CATEGORIES)}
-- "tags": 2-5 lowercase tags
+- "tags": 3-5 lowercase tags
 
-Output ONLY valid JSON array, no markdown fences, no extra text.`;
+Output ONLY a valid JSON array. No markdown fences. Ensure all strings are properly escaped for JSON.`;
 
     let raw: string;
     try {
       raw = await runAI(ai, prompt, system);
     } catch (err) {
-      console.error(`Batch ${i / BATCH_SIZE + 1} synthesis failed:`, err);
+      console.error(`Batch ${i / BATCH_SIZE + 1} failed:`, err);
       continue;
     }
 
     const jsonStr = raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-
     let parsed: Array<{ title: string; summary: string; category: string; tags: string[] }>;
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
       const match = jsonStr.match(/\[[\s\S]*\]/);
       if (!match) {
-        console.error(`Batch ${i / BATCH_SIZE + 1} JSON parse failed`);
+        console.error(`Batch ${i / BATCH_SIZE + 1} parse failed`);
         continue;
       }
-      parsed = JSON.parse(match[0]);
+      try {
+        parsed = JSON.parse(match[0]);
+      } catch {
+        console.error(`Batch ${i / BATCH_SIZE + 1} extraction failed`);
+        continue;
+      }
     }
 
     const stories = parsed.map((item, j) => {
@@ -77,6 +78,7 @@ Output ONLY valid JSON array, no markdown fences, no extra text.`;
         slug,
         title: item.title,
         summary: item.summary,
+        content: item.summary,
         sources: group.map((g) => ({ name: g.source, url: g.url })),
         category: CATEGORIES.includes(item.category) ? item.category : 'industry',
         tags: item.tags || [],
@@ -86,7 +88,7 @@ Output ONLY valid JSON array, no markdown fences, no extra text.`;
     });
 
     allStories.push(...stories);
-    console.log(`Batch ${i / BATCH_SIZE + 1}: synthesized ${stories.length} stories`);
+    console.log(`Batch ${i / BATCH_SIZE + 1}: ${stories.length} stories`);
   }
 
   return allStories;

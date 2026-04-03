@@ -159,8 +159,28 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === '/trigger' && request.method === 'POST') {
-      await runPipeline(env);
-      return new Response('Pipeline complete', { status: 200 });
+      // Pipeline runs via waitUntil — returns immediately.
+      // For full 15-min execution, use the cron trigger.
+      ctx.waitUntil(runPipeline(env).catch(err => console.error('Pipeline error:', err)));
+      return new Response('Pipeline triggered via waitUntil', { status: 200 });
+    }
+
+    if (url.pathname === '/test-write') {
+      await env.STORIES.put('test/hello', JSON.stringify({ title: 'Test story', slug: 'hello' }));
+      const val = await env.STORIES.get('test/hello');
+      return new Response(`Write test: ${val ? 'SUCCESS' : 'FAILED'}`, { status: 200 });
+    }
+
+    if (url.pathname === '/test-ai') {
+      try {
+        const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fp8', {
+          messages: [{ role: 'user', content: 'Say hello in 10 words' }],
+          max_tokens: 50,
+        });
+        return new Response(`AI test: ${JSON.stringify(response)}`, { status: 200 });
+      } catch (err) {
+        return new Response(`AI error: ${err}`, { status: 500 });
+      }
     }
 
     if (url.pathname === '/health') {
