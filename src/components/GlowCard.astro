@@ -8,11 +8,6 @@ const { class: className = '', tag = 'div', href } = Astro.props;
 const Tag = tag as any;
 ---
 <Tag class:list={['glow-wrap group', className]} href={href}>
-  <!-- Outer soft glow (blurred, border-only) -->
-  <div class="glow-ring glow-ring-outer" aria-hidden="true"></div>
-  <!-- Inner crisp glow (sharp, border-only) -->
-  <div class="glow-ring glow-ring-inner" aria-hidden="true"></div>
-  <!-- Content -->
   <div class="glow-content">
     <slot />
   </div>
@@ -23,82 +18,55 @@ const Tag = tag as any;
     position: relative;
     display: block;
     border-radius: 0.75rem;
-    isolation: isolate;
+    padding: 1px;
+    background: var(--color-border-subtle);
+    transition: background 0.4s ease;
   }
-
-  .glow-ring {
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    overflow: hidden;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    /* KEY: mask to border-only — hides the filled center */
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    padding: 1.5px;
-  }
-  .glow-wrap:hover .glow-ring {
-    opacity: 1;
-  }
-
-  /* Outer — soft blurred glow */
-  .glow-ring-outer {
-    inset: -3px;
-    filter: blur(4px);
-    padding: 3px;
-  }
-  .glow-ring-outer::before {
+  .glow-wrap::before {
     content: '';
     position: absolute;
-    width: 800px;
-    height: 800px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(60deg);
+    inset: -2px;
+    border-radius: inherit;
     background: conic-gradient(
       transparent, #402fb5 5%, transparent 20%,
       transparent 50%, #cf30aa 55%, transparent 70%
     );
-    transition: transform 2s ease;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 2s ease;
+    transform: rotate(60deg);
+    z-index: 0;
+    border-radius: 0.875rem;
+    filter: blur(3px);
   }
-  .glow-wrap:hover .glow-ring-outer::before {
-    transform: translate(-50%, -50%) rotate(-120deg);
-  }
-
-  /* Inner — crisp 1px border */
-  .glow-ring-inner::before {
+  .glow-wrap::after {
     content: '';
     position: absolute;
-    width: 800px;
-    height: 800px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(70deg);
+    inset: -1px;
+    border-radius: inherit;
     background: conic-gradient(
       transparent, #6366f1 5%, transparent 14%,
       transparent 50%, #a855f7 55%, transparent 64%
     );
-    transition: transform 2s ease;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 2s ease;
+    transform: rotate(70deg);
+    z-index: 0;
+    border-radius: 0.875rem;
   }
-  .glow-wrap:hover .glow-ring-inner::before {
-    transform: translate(-50%, -50%) rotate(-110deg);
+  .glow-wrap:hover::before {
+    opacity: 1;
+    transform: rotate(-120deg);
+  }
+  .glow-wrap:hover::after {
+    opacity: 1;
+    transform: rotate(-110deg);
   }
 
   .glow-content {
     position: relative;
-    border-radius: inherit;
+    border-radius: 0.6875rem;
     background: var(--color-bg-card);
     height: 100%;
     z-index: 1;
-    border: 1px solid var(--color-border-subtle);
-    transition: border-color 0.4s ease;
-  }
-  .glow-wrap:hover .glow-content {
-    border-color: transparent;
   }
 </style>
