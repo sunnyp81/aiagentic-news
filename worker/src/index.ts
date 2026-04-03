@@ -14,7 +14,7 @@ const RSS_SOURCES: SourceConfig[] = [
   { id: 'venturebeat', name: 'VentureBeat', feedUrl: 'https://venturebeat.com/category/ai/feed/', type: 'rss' },
   { id: 'mittech', name: 'MIT Tech Review', feedUrl: 'https://www.technologyreview.com/feed/', type: 'rss' },
   { id: 'openai', name: 'OpenAI Blog', feedUrl: 'https://openai.com/blog/rss.xml', type: 'rss' },
-  { id: 'anthropic', name: 'Anthropic Blog', feedUrl: 'https://www.anthropic.com/rss.xml', type: 'rss' },
+  { id: 'anthropic', name: 'Anthropic Blog', feedUrl: 'https://www.anthropic.com/feed.xml', type: 'rss' },
   { id: 'deepmind', name: 'Google DeepMind', feedUrl: 'https://deepmind.google/blog/rss.xml', type: 'rss' },
   { id: 'arxiv', name: 'arXiv cs.AI', feedUrl: 'https://rss.arxiv.org/rss/cs.AI', type: 'rss' },
 ];
@@ -81,7 +81,7 @@ async function triggerGitHubBuild(env: Env): Promise<void> {
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': 'AIAgenticNews-Worker/1.0',
         },
-        body: JSON.stringify({ ref: 'main' }),
+        body: JSON.stringify({ ref: 'master' }),
       }
     );
     if (!res.ok) {
@@ -94,9 +94,8 @@ async function triggerGitHubBuild(env: Env): Promise<void> {
   }
 }
 
-export default {
-  async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
-    console.log(`Cron triggered at ${new Date().toISOString()}`);
+async function runPipeline(env: Env): Promise<void> {
+    console.log(`Pipeline started at ${new Date().toISOString()}`);
 
     // 1. Fetch all sources
     const rawItems = await fetchAllSources(env);
@@ -149,17 +148,19 @@ export default {
 
     // 7. Trigger site rebuild
     await triggerGitHubBuild(env);
+}
+
+export default {
+  async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
+    await runPipeline(env);
   },
 
-  // Manual trigger endpoint for testing
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname === '/trigger' && request.method === 'POST') {
-      ctx.waitUntil(
-        this.scheduled!({} as ScheduledController, env, ctx) as Promise<void>
-      );
-      return new Response('Cron triggered manually', { status: 200 });
+      await runPipeline(env);
+      return new Response('Pipeline complete', { status: 200 });
     }
 
     if (url.pathname === '/health') {

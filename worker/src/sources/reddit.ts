@@ -39,7 +39,7 @@ export async function fetchReddit(
   clientSecret: string | undefined,
   since: string | null
 ): Promise<RawItem[]> {
-  const sinceDate = since ? new Date(since) : new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const sinceDate = since ? new Date(since) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   const useAuth = clientId && clientSecret;
   let token = '';

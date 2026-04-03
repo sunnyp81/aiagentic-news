@@ -37,7 +37,7 @@ async function kvList(nsId: string, prefix?: string): Promise<{ name: string }[]
 }
 
 async function kvGet<T>(nsId: string, key: string): Promise<T | null> {
-  if (!CF_API_TOKEN || !nsId) return null;
+  if (!CF_API_KEY || !nsId) return null;
 
   const res = await fetch(`${KV_BASE}/${nsId}/values/${encodeURIComponent(key)}`, {
     headers: cfHeaders(),
