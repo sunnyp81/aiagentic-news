@@ -1,0 +1,37 @@
+---
+import { categories } from '../lib/categories';
+import type { CategoryId } from '../lib/types';
+
+interface Props {
+  active?: CategoryId | null;
+}
+
+const { active = null } = Astro.props;
+---
+<div class="flex flex-wrap gap-2 mb-6">
+  <a
+    href="/"
+    class:list={[
+      'px-3 py-1 rounded-full text-sm font-medium transition-colors',
+      !active
+        ? 'bg-[var(--color-accent)] text-white'
+        : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]',
+    ]}
+  >
+    All
+  </a>
+  {categories.map((cat) => (
+    <a
+      href={`/category/${cat.id}/`}
+      class:list={[
+        'px-3 py-1 rounded-full text-sm font-medium transition-colors',
+        active === cat.id
+          ? 'text-white'
+          : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]',
+      ]}
+      style={active === cat.id ? `background-color: ${cat.color}` : ''}
+    >
+      {cat.label}
+    </a>
+  ))}
+</div>

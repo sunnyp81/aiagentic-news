@@ -1,0 +1,46 @@
+---
+import type { Story } from '../lib/types';
+import { getCategoryById } from '../lib/categories';
+
+interface Props {
+  story: Story;
+}
+
+const { story } = Astro.props;
+const cat = getCategoryById(story.category);
+const date = new Date(story.publishedAt).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+---
+<article class="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-5 hover:bg-[var(--color-bg-hover)] transition-colors">
+  <div class="flex items-center gap-3 mb-3">
+    <span
+      class="px-2 py-0.5 rounded text-xs font-medium text-white"
+      style={`background-color: ${cat.color}`}
+    >
+      {cat.label}
+    </span>
+    <time class="text-xs text-[var(--color-text-muted)]">{date}</time>
+  </div>
+  <h3 class="text-lg font-semibold mb-2">
+    <a href={`/story/${story.slug}/`} class="text-[var(--color-text)] hover:text-[var(--color-accent)]">
+      {story.title}
+    </a>
+  </h3>
+  <p class="text-sm text-[var(--color-text-muted)] mb-3">{story.summary}</p>
+  <div class="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+    <span>Sources:</span>
+    {story.sources.map((src, i) => (
+      <>
+        <a href={src.url} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)]">
+          {src.name}
+        </a>
+        {i < story.sources.length - 1 && <span>·</span>}
+      </>
+    ))}
+  </div>
+</article>

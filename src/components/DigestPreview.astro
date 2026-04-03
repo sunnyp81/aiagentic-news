@@ -1,0 +1,25 @@
+---
+import type { Digest } from '../lib/types';
+
+interface Props {
+  digest: Digest;
+}
+
+const { digest } = Astro.props;
+const date = new Date(digest.publishedAt).toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const preview = digest.content.split('\n').slice(0, 3).join(' ').slice(0, 200) + '...';
+---
+<a href={`/digest/${digest.date}/`} class="block bg-gradient-to-r from-[var(--color-accent)]/10 to-[var(--color-bg-card)] border border-[var(--color-accent)]/30 rounded-lg p-6 hover:border-[var(--color-accent)]/60 transition-colors mb-8">
+  <div class="flex items-center gap-2 mb-2">
+    <span class="text-xs font-medium text-[var(--color-accent)] uppercase tracking-wide">Daily Digest</span>
+    <time class="text-xs text-[var(--color-text-muted)]">{date}</time>
+  </div>
+  <h2 class="text-xl font-bold text-[var(--color-text)] mb-2">{digest.title}</h2>
+  <p class="text-sm text-[var(--color-text-muted)]">{preview}</p>
+  <span class="inline-block mt-3 text-sm text-[var(--color-accent)] font-medium">Read full digest →</span>
+</a>

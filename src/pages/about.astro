@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="About" description="How AI Agentic News works — automated AI news curation from 14+ sources.">
+  <h1 class="text-3xl font-bold mb-6">About AI Agentic News</h1>
+  <div class="prose prose-invert max-w-none space-y-4 text-[var(--color-text-muted)]">
+    <p class="text-lg">AI Agentic News is an automated news curation platform that aggregates, deduplicates, and synthesizes AI news from across the web every 4 hours.</p>
+    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">Sources</h2>
+    <p>We pull from 14+ sources including TechCrunch, The Verge, Ars Technica, Wired, MIT Technology Review, arXiv, Hacker News, Reddit, and AI company blogs from OpenAI, Anthropic, and Google DeepMind.</p>
+    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">How It Works</h2>
+    <p>A Cloudflare Worker runs every 4 hours, fetching the latest from all sources. Claude AI deduplicates overlapping stories, categorises them, and writes concise summaries. At midnight, a daily digest synthesizes the top stories into a long-form article. The site rebuilds automatically and deploys to Cloudflare Pages.</p>
+    <h2 class="text-xl font-semibold text-[var(--color-text)] mt-8">Categories</h2>
+    <ul class="list-disc pl-6 space-y-1">
+      <li><strong>Models & Research</strong> — new model releases, benchmarks, papers</li>
+      <li><strong>Agents & Autonomy</strong> — agentic AI, tool use, autonomous systems</li>
+      <li><strong>Industry & Business</strong> — funding, acquisitions, enterprise adoption</li>
+      <li><strong>Tools & Frameworks</strong> — developer tools, SDKs, open source</li>
+      <li><strong>Policy & Ethics</strong> — regulation, safety, governance</li>
+      <li><strong>Hardware & Infrastructure</strong> — chips, data centres, compute</li>
+    </ul>
+  </div>
+</Base>

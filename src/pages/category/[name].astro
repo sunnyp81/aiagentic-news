@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import StoryCard from '../../components/StoryCard.astro';
+import CategoryChips from '../../components/CategoryChips.astro';
+import { getStoriesByCategory } from '../../lib/kv';
+import { categories } from '../../lib/categories';
+import type { CategoryId } from '../../lib/types';
+
+export function getStaticPaths() {
+  return categories.map((cat) => ({
+    params: { name: cat.id },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+const stories = await getStoriesByCategory(category.id as CategoryId);
+---
+<Base title={category.label} description={`Latest AI news in ${category.label}`}>
+  <h1 class="text-3xl font-bold mb-6">{category.label}</h1>
+
+  <CategoryChips active={category.id} />
+
+  <div class="grid gap-4">
+    {stories.map((story) => (
+      <StoryCard story={story} />
+    ))}
+  </div>
+
+  {stories.length === 0 && (
+    <p class="text-center text-[var(--color-text-muted)] py-12">No stories in this category yet.</p>
+  )}
+</Base>

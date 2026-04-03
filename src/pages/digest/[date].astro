@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getDigestByDate, getAllDigestDates, getStoryBySlug } from '../../lib/kv';
+
+export async function getStaticPaths() {
+  const dates = await getAllDigestDates();
+  return dates.map((date) => ({ params: { date } }));
+}
+
+const { date } = Astro.params;
+const digest = await getDigestByDate(date!);
+
+if (!digest) {
+  return Astro.redirect('/404');
+}
+
+const formattedDate = new Date(digest.publishedAt).toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const topStories = (
+  await Promise.all(digest.topStories.map((slug) => getStoryBySlug(slug)))
+).filter(Boolean);
+---
+<Base title={digest.title} description={`Daily AI news digest for ${formattedDate}`} ogType="article">
+  <article class="max-w-3xl mx-auto">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xs font-medium text-[var(--color-accent)] uppercase tracking-wide">Daily Digest</span>
+      <time class="text-sm text-[var(--color-text-muted)]">{formattedDate}</time>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-8">{digest.title}</h1>
+
+    <div class="prose prose-invert max-w-none text-[var(--color-text-muted)] leading-relaxed space-y-4" set:html={digest.content.replace(/\n/g, '<br/>')} />
+
+    {topStories.length > 0 && (
+      <div class="border-t border-[var(--color-border)] pt-6 mt-8">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-3">Stories in this digest</h2>
+        <ul class="space-y-2">
+          {topStories.map((story) => (
+            <li>
+              <a href={`/story/${story!.slug}/`} class="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">
+                {story!.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <div class="mt-8">
+      <a href="/" class="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]">← Back to all stories</a>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": digest.title,
+    "datePublished": digest.publishedAt,
+    "author": { "@type": "Organization", "name": "AI Agentic News" },
+    "publisher": { "@type": "Organization", "name": "AI Agentic News", "url": "https://aiagentic.news" },
+  })} />
+</Base>

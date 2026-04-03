@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import DigestPreview from '../components/DigestPreview.astro';
+import CategoryChips from '../components/CategoryChips.astro';
+import StoryCard from '../components/StoryCard.astro';
+import { getStories, getDigests } from '../lib/kv';
+
+const stories = await getStories();
+const digests = await getDigests();
+const latestDigest = digests[0];
+---
+<Base title="Latest AI News">
+  {latestDigest && <DigestPreview digest={latestDigest} />}
+
+  <CategoryChips />
+
+  <div class="grid gap-4">
+    {stories.map((story) => (
+      <StoryCard story={story} />
+    ))}
+  </div>
+
+  {stories.length === 0 && (
+    <p class="text-center text-[var(--color-text-muted)] py-12">No stories yet. Check back soon.</p>
+  )}
+</Base>

@@ -1,0 +1,22 @@
+name = "aiagentic-news-worker"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+[triggers]
+crons = ["0 */4 * * *"]
+
+[[kv_namespaces]]
+binding = "STORIES"
+id = "REPLACE_AFTER_CREATE"
+
+[[kv_namespaces]]
+binding = "DIGESTS"
+id = "REPLACE_AFTER_CREATE"
+
+[[kv_namespaces]]
+binding = "FEED_STATE"
+id = "REPLACE_AFTER_CREATE"
+
+[vars]
+GITHUB_OWNER = "sunnyp81"
+GITHUB_REPO = "aiagentic-news"
