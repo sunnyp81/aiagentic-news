@@ -70,6 +70,32 @@ async function updateFeedState(env: Env): Promise<void> {
   );
 }
 
+async function pushIndexNow(slugs: string[], env: Env): Promise<void> {
+  const key = env.INDEXNOW_KEY || 'fd0147cf4f4446f4984568ee673533e6';
+  const host = 'aiagentic.news';
+  const urlList = slugs.map((slug) => `https://${host}/story/${slug}/`);
+
+  try {
+    const res = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        host,
+        key,
+        keyLocation: `https://${host}/${key}.txt`,
+        urlList,
+      }),
+    });
+    if (res.ok) {
+      console.log(`IndexNow: submitted ${urlList.length} URLs (status ${res.status})`);
+    } else {
+      console.error(`IndexNow failed: ${res.status} ${await res.text()}`);
+    }
+  } catch (err) {
+    console.error('IndexNow error:', err);
+  }
+}
+
 async function triggerGitHubBuild(env: Env): Promise<void> {
   try {
     const res = await fetch(
@@ -132,7 +158,10 @@ async function runPipeline(env: Env): Promise<void> {
       )
     );
 
-    // 5. At midnight, generate daily digest
+    // 5. Push new story URLs to IndexNow (Bing)
+    await pushIndexNow(stories.map((s) => s.slug), env);
+
+    // 6. At midnight, generate daily digest
     if (isMidnightRun()) {
       try {
         const digest = await generateDigest(env.AI, stories, today);
@@ -143,10 +172,10 @@ async function runPipeline(env: Env): Promise<void> {
       }
     }
 
-    // 6. Update feed state
+    // 7. Update feed state
     await updateFeedState(env);
 
-    // 7. Trigger site rebuild
+    // 8. Trigger site rebuild
     await triggerGitHubBuild(env);
 }
 

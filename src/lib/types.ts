@@ -3,6 +3,7 @@ export interface Story {
   title: string;
   summary: string;
   content: string;
+  keyTakeaways?: string[];
   sources: { name: string; url: string }[];
   category: CategoryId;
   tags: string[];

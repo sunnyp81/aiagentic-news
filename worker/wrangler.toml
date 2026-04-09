@@ -23,3 +23,4 @@ binding = "AI"
 [vars]
 GITHUB_OWNER = "sunnyp81"
 GITHUB_REPO = "aiagentic-news"
+INDEXNOW_KEY = "fd0147cf4f4446f4984568ee673533e6"

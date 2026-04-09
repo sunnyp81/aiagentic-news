@@ -31,9 +31,11 @@ export async function categorizeAndSummarize(
       return `Story ${j + 1}:\nTitles:\n${titles}\nContext: ${summaries.slice(0, 500)}`;
     }).join('\n\n---\n\n');
 
-    const system = `You are a senior tech journalist. For each story, output a JSON array with objects containing:
-- "title": engaging headline in Title Case (max 80 chars, capitalise first letter of each major word)
-- "summary": 5-8 sentence article. Cover what happened, who is involved, why it matters, and what happens next. Include specific details like numbers, company names, and technical specifics. Write like a real news article, not a tweet.
+    const system = `You are a senior tech journalist writing substantive AI news coverage. For each story, output a JSON array with objects containing:
+- "title": engaging, specific headline in Title Case (max 80 chars). Use concrete details — model names, company names, numbers.
+- "summary": 2-3 sentence preview for article cards. Must name who, what, and why it matters. No vague openers.
+- "content": Full article body as a single string. Use \\n\\n to separate paragraphs. Write 4-5 paragraphs totalling 300-450 words covering: (1) what happened with specific details, (2) background/context, (3) technical or business implications, (4) reactions or expert perspective if available, (5) what to watch next. Include specific numbers, dates, model names, company names wherever available. Cite sources inline using their name (e.g. "according to TechCrunch"). Do NOT use markdown headers or bullet points — prose paragraphs only.
+- "key_takeaways": array of 3-4 short, specific bullet strings (facts a reader should remember — not vague observations).
 - "category": one of ${JSON.stringify(CATEGORIES)}
 - "tags": 3-5 lowercase tags
 
@@ -48,7 +50,7 @@ Output ONLY a valid JSON array. No markdown fences. Ensure all strings are prope
     }
 
     const jsonStr = raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-    let parsed: Array<{ title: string; summary: string; category: string; tags: string[] }>;
+    let parsed: Array<{ title: string; summary: string; content?: string; key_takeaways?: string[]; category: string; tags: string[] }>;
     try {
       parsed = JSON.parse(jsonStr);
     } catch {
@@ -74,11 +76,13 @@ Output ONLY a valid JSON array. No markdown fences. Ensure all strings are prope
         .slice(0, 80)
         .replace(/-$/, '');
 
+      const content = item.content || item.summary;
       return {
         slug,
         title: item.title,
         summary: item.summary,
-        content: item.summary,
+        content,
+        keyTakeaways: item.key_takeaways || [],
         sources: group.map((g) => ({ name: g.source, url: g.url })),
         category: CATEGORIES.includes(item.category) ? item.category : 'industry',
         tags: item.tags || [],

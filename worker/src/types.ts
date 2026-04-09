@@ -11,6 +11,7 @@ export interface Story {
   title: string;
   summary: string;
   content: string;
+  keyTakeaways?: string[];
   sources: { name: string; url: string }[];
   category: string;
   tags: string[];
@@ -36,6 +37,7 @@ export interface Env {
   GITHUB_REPO: string;
   REDDIT_CLIENT_ID?: string;
   REDDIT_CLIENT_SECRET?: string;
+  INDEXNOW_KEY?: string;
 }
 
 export interface SourceConfig {

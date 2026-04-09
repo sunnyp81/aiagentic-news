@@ -29,15 +29,16 @@ const time = new Date(story.publishedAt).toLocaleTimeString('en-GB', {
   minute: '2-digit',
 });
 
-const wordCount = story.summary.split(/\s+/).length;
+// Use content for the article body (richer), summary for meta
+const bodyText = story.content || story.summary;
+const wordCount = bodyText.split(/\s+/).length;
 const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
-// Split into paragraphs at sentence boundaries
+// Split on double newlines for natural paragraphs
+const paragraphs = bodyText.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+
+// First 2 sentences of summary for meta description
 const sentences = story.summary.split(/(?<=\.)\s+/);
-const paragraphs: string[] = [];
-for (let i = 0; i < sentences.length; i += 3) {
-  paragraphs.push(sentences.slice(i, i + 3).join(' '));
-}
 
 // Related stories (same category, excluding current)
 const allStories = await getStories();
@@ -89,6 +90,24 @@ const related = allStories
         </p>
       ))}
     </div>
+
+    <!-- Key Takeaways -->
+    {story.keyTakeaways && story.keyTakeaways.length > 0 && (
+      <div class="mb-10 p-5 rounded-xl border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5">
+        <h2 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] mb-3 flex items-center gap-2">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Key Takeaways
+        </h2>
+        <ul class="space-y-2">
+          {story.keyTakeaways.map((point) => (
+            <li class="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
+              <span class="text-[var(--color-accent)] mt-0.5 shrink-0">→</span>
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
 
     <!-- Sources & Tags -->
     <GlowCard>
