@@ -17,12 +17,12 @@ const navLinks = [
         <span class="text-[10px] text-[var(--color-text-muted)] leading-tight">AI News, Auto-Curated</span>
       </div>
     </a>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 sm:gap-4">
       <LivePulse label="Updated every 4h" />
-      <div class="h-4 w-px bg-[var(--color-border)]"></div>
-      <nav class="flex items-center gap-1">
+      <div class="hidden sm:block h-4 w-px bg-[var(--color-border)]"></div>
+      <nav class="flex items-center gap-0.5 sm:gap-1">
         {navLinks.map(({ href, label }) => (
-          <a href={href} class="px-3 py-1.5 rounded-lg text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-all">{label}</a>
+          <a href={href} class="px-2.5 sm:px-3 py-1.5 rounded-lg text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-all">{label}</a>
         ))}
       </nav>
     </div>

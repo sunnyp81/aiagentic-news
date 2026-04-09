@@ -10,17 +10,20 @@ interface Props {
 const { storyCount, sourceCount, categoryCount } = Astro.props;
 
 const stats = [
-  { value: storyCount, label: 'Stories Today', accent: 'var(--color-accent)' },
-  { value: sourceCount, label: 'Sources', accent: '#a855f7' },
-  { value: categoryCount, label: 'Categories', accent: '#06b6d4' },
+  { value: storyCount, label: 'Stories Today', short: 'Stories', accent: 'var(--color-accent)' },
+  { value: sourceCount, label: 'Sources', short: 'Sources', accent: '#a855f7' },
+  { value: categoryCount, label: 'Categories', short: 'Topics', accent: '#06b6d4' },
 ];
 ---
-<div class="grid grid-cols-3 gap-4 mb-10">
-  {stats.map(({ value, label, accent }) => (
+<div class="grid grid-cols-3 gap-2 sm:gap-4 mb-10">
+  {stats.map(({ value, label, short }) => (
     <GlowCard>
-      <div class="p-5">
-        <p class="text-3xl font-extrabold text-[var(--color-text)] mb-1">{value}</p>
-        <p class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider">{label}</p>
+      <div class="p-3 sm:p-5">
+        <p class="text-2xl sm:text-3xl font-extrabold text-[var(--color-text)] mb-0.5 sm:mb-1">{value}</p>
+        <p class="text-[10px] sm:text-xs text-[var(--color-text-muted)] uppercase tracking-wider truncate">
+          <span class="sm:hidden">{short}</span>
+          <span class="hidden sm:inline">{label}</span>
+        </p>
       </div>
     </GlowCard>
   ))}

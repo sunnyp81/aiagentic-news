@@ -179,6 +179,35 @@ async function runPipeline(env: Env): Promise<void> {
     await triggerGitHubBuild(env);
 }
 
+function xmlEscape(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function wrapTitle(title: string, maxChars: number, maxLines: number): string[] {
+  const words = title.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (lines.length >= maxLines) break;
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxChars) {
+      current = candidate;
+    } else {
+      if (current) lines.push(current);
+      // long single word: hard-truncate
+      current = word.length > maxChars ? word.slice(0, maxChars - 1) + '…' : word;
+    }
+  }
+  if (current && lines.length < maxLines) {
+    lines.push(current.length > maxChars ? current.slice(0, maxChars - 1) + '…' : current);
+  }
+  return lines.length ? lines : [title.slice(0, maxChars)];
+}
+
 function generateOgSvg(title: string, category: string): string {
   const CATEGORY_COLORS: Record<string, string> = {
     models: '#8b5cf6',
@@ -190,28 +219,26 @@ function generateOgSvg(title: string, category: string): string {
   };
   const catColor = CATEGORY_COLORS[category] || '#8b5cf6';
 
-  // Wrap title to max 2 lines of ~38 chars
-  const words = title.split(' ');
-  const lines: string[] = [];
-  let current = '';
-  for (const word of words) {
-    if (lines.length >= 2) break;
-    const candidate = current ? `${current} ${word}` : word;
-    if (candidate.length <= 38) {
-      current = candidate;
-    } else {
-      if (current) lines.push(current);
-      current = word;
-    }
-  }
-  if (current && lines.length < 2) {
-    // Truncate if still too long
-    lines.push(current.length > 40 ? current.slice(0, 38) + '…' : current);
-  }
-  if (lines.length === 0) lines.push(title.slice(0, 38));
+  // Font size 56, cap-height ~40px, line-height 72px
+  // Fixed zones (no dynamic collision):
+  //   Header:   y=60–100  (site label baseline y=88)
+  //   Chip:     y=130–166 (height 36, bottom=166)
+  //   Gap:      166–220   (54px clear)
+  //   Title:    baseline starts y=260, each line +72
+  //   Footer:   y=550–630
+  const FONT = 56;
+  const LINE_H = 72;
+  const TITLE_BASE = 260; // baseline of first title line; top ≈ 260-40=220, gap from chip=54px ✓
 
-  const titleY1 = lines.length === 2 ? 330 : 360;
-  const titleY2 = titleY1 + 80;
+  const lines = wrapTitle(title, 32, 3);
+  const chipWidth = category.length * 12 + 40;
+
+  const titleSvg = lines
+    .map((line, i) => {
+      const y = TITLE_BASE + i * LINE_H;
+      return `  <text x="60" y="${y}" font-family="Arial, sans-serif" font-size="${FONT}" font-weight="900" fill="#ffffff" opacity="0.95">${xmlEscape(line)}</text>`;
+    })
+    .join('\n');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
@@ -219,8 +246,8 @@ function generateOgSvg(title: string, category: string): string {
       <stop offset="0%" stop-color="#060911"/>
       <stop offset="100%" stop-color="#0d0f1a"/>
     </linearGradient>
-    <radialGradient id="glow" cx="15%" cy="30%" r="50%">
-      <stop offset="0%" stop-color="${catColor}" stop-opacity="0.15"/>
+    <radialGradient id="glow" cx="15%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="${catColor}" stop-opacity="0.12"/>
       <stop offset="100%" stop-color="${catColor}" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
@@ -228,50 +255,27 @@ function generateOgSvg(title: string, category: string): string {
       <stop offset="100%" stop-color="#a78bfa"/>
     </linearGradient>
   </defs>
-
-  <!-- Background -->
   <rect width="1200" height="630" fill="url(#bg)"/>
   <rect width="1200" height="630" fill="url(#glow)"/>
-
-  <!-- Grid lines -->
-  <g stroke="#ffffff" stroke-opacity="0.03" stroke-width="1">
-    <line x1="0" y1="105" x2="1200" y2="105"/>
-    <line x1="0" y1="210" x2="1200" y2="210"/>
-    <line x1="0" y1="315" x2="1200" y2="315"/>
-    <line x1="0" y1="420" x2="1200" y2="420"/>
+  <g stroke="#ffffff" stroke-opacity="0.025" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/>
     <line x1="0" y1="525" x2="1200" y2="525"/>
-    <line x1="240" y1="0" x2="240" y2="630"/>
-    <line x1="480" y1="0" x2="480" y2="630"/>
-    <line x1="720" y1="0" x2="720" y2="630"/>
-    <line x1="960" y1="0" x2="960" y2="630"/>
+    <line x1="240" y1="0" x2="240" y2="630"/><line x1="480" y1="0" x2="480" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/><line x1="960" y1="0" x2="960" y2="630"/>
   </g>
-
-  <!-- Accent bar top -->
   <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
-
-  <!-- Site label -->
-  <text x="60" y="90" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" opacity="0.5" letter-spacing="4">AIAGENTIC.NEWS</text>
-
-  <!-- Live dot -->
-  <circle cx="1120" cy="76" r="8" fill="#10b981"/>
-  <text x="1136" y="82" font-family="Arial, sans-serif" font-size="20" fill="#10b981" font-weight="600">LIVE</text>
-
-  <!-- Category chip -->
-  <rect x="60" y="${titleY1 - 68}" width="${category.length * 13 + 32}" height="36" rx="6" fill="${catColor}" opacity="0.2"/>
-  <rect x="60" y="${titleY1 - 68}" width="${category.length * 13 + 32}" height="36" rx="6" fill="none" stroke="${catColor}" stroke-width="1" opacity="0.6"/>
-  <text x="${76}" y="${titleY1 - 44}" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="${catColor}" letter-spacing="2">${category.toUpperCase()}</text>
-
-  <!-- Title line 1 -->
-  <text x="60" y="${titleY1}" font-family="Arial, sans-serif" font-size="64" font-weight="900" fill="#ffffff" opacity="0.95">${lines[0] || ''}</text>
-  ${lines[1] ? `<text x="60" y="${titleY2}" font-family="Arial, sans-serif" font-size="64" font-weight="900" fill="#ffffff" opacity="0.95">${lines[1]}</text>` : ''}
-
-  <!-- Bottom bar -->
-  <rect x="0" y="574" width="1200" height="56" fill="#ffffff" fill-opacity="0.03"/>
-  <text x="60" y="609" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" opacity="0.4">Curated from 13+ sources · Updated every 4 hours · Powered by AI</text>
-
-  <!-- Decorative circles -->
-  <circle cx="1100" cy="500" r="180" fill="${catColor}" fill-opacity="0.04"/>
-  <circle cx="1100" cy="500" r="120" fill="${catColor}" fill-opacity="0.04"/>
+  <text x="60" y="88" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff" opacity="0.45" letter-spacing="4">AIAGENTIC.NEWS</text>
+  <circle cx="1100" cy="76" r="7" fill="#10b981"/>
+  <text x="1116" y="82" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#10b981" letter-spacing="1">LIVE</text>
+  <rect x="60" y="130" width="${chipWidth}" height="36" rx="6" fill="${catColor}" opacity="0.18"/>
+  <rect x="60" y="130" width="${chipWidth}" height="36" rx="6" fill="none" stroke="${catColor}" stroke-width="1" opacity="0.55"/>
+  <text x="78" y="154" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="${catColor}" letter-spacing="2">${xmlEscape(category.toUpperCase())}</text>
+${titleSvg}
+  <rect x="0" y="550" width="1200" height="80" fill="#ffffff" fill-opacity="0.02"/>
+  <text x="60" y="598" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" opacity="0.35">Curated from 13+ sources · Updated every 4 hours · Powered by AI</text>
+  <circle cx="1100" cy="520" r="160" fill="${catColor}" fill-opacity="0.04"/>
+  <circle cx="1100" cy="520" r="100" fill="${catColor}" fill-opacity="0.04"/>
 </svg>`;
 }
 
