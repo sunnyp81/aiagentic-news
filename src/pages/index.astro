@@ -143,6 +143,44 @@ const tickerItems = stories.slice(0, 8).map(s => s.title);
     </div>
   )}
 
+  <!-- Email Capture -->
+  <div class="my-14 relative overflow-hidden rounded-2xl border border-[var(--color-accent)]/20 bg-gradient-to-br from-[var(--color-bg-card)] to-[var(--color-bg)]">
+    <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/5 to-transparent pointer-events-none"></div>
+    <div class="relative p-8 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center gap-8">
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse"></div>
+          <span class="text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">Daily Digest</span>
+        </div>
+        <h2 class="text-2xl font-extrabold text-[var(--color-text)] mb-2 tracking-tight">Get the AI briefing in your inbox</h2>
+        <p class="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-sm">Top agentic AI stories, synthesized daily. No noise — just signal. Free, unsubscribe any time.</p>
+      </div>
+      <form
+        action="https://api.staticforms.xyz/submit"
+        method="POST"
+        class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto min-w-[320px]"
+      >
+        <input type="hidden" name="accessKey" value="sf_9e906eb6c00416b9d3354749" />
+        <input type="hidden" name="subject" value="New aiagentic.news subscriber" />
+        <input type="hidden" name="redirectTo" value="https://aiagentic.news/?subscribed=1" />
+        <input type="hidden" name="replyTo" value="@" />
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="you@example.com"
+          class="flex-1 px-4 py-3 rounded-xl bg-[var(--color-bg)]/80 border border-[var(--color-border-subtle)] text-[var(--color-text)] placeholder-[var(--color-text-muted)] text-sm focus:outline-none focus:border-[var(--color-accent)]/50 transition-colors"
+        />
+        <button
+          type="submit"
+          class="px-5 py-3 rounded-xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold transition-colors whitespace-nowrap"
+        >
+          Subscribe →
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Divider -->
   <div class="my-12 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent"></div>
 

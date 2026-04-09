@@ -18,6 +18,8 @@ if (!story) {
 }
 
 const cat = getCategoryById(story.category);
+const WORKER = 'https://aiagentic-news-worker.sunnypat81.workers.dev';
+const ogImage = `${WORKER}/og?title=${encodeURIComponent(story.title)}&category=${story.category}`;
 const date = new Date(story.publishedAt).toLocaleDateString('en-GB', {
   weekday: 'long',
   day: 'numeric',
@@ -46,7 +48,7 @@ const related = allStories
   .filter((s) => s.category === story.category && s.slug !== story.slug)
   .slice(0, 3);
 ---
-<Base title={toTitleCase(story.title)} description={sentences.slice(0, 2).join(' ')} ogType="article">
+<Base title={toTitleCase(story.title)} description={sentences.slice(0, 2).join(' ')} ogType="article" ogImage={ogImage}>
   <article class="max-w-3xl mx-auto">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 mb-8 text-sm">

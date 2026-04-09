@@ -179,6 +179,102 @@ async function runPipeline(env: Env): Promise<void> {
     await triggerGitHubBuild(env);
 }
 
+function generateOgSvg(title: string, category: string): string {
+  const CATEGORY_COLORS: Record<string, string> = {
+    models: '#8b5cf6',
+    agents: '#06b6d4',
+    industry: '#f59e0b',
+    tools: '#10b981',
+    policy: '#ef4444',
+    hardware: '#f97316',
+  };
+  const catColor = CATEGORY_COLORS[category] || '#8b5cf6';
+
+  // Wrap title to max 2 lines of ~38 chars
+  const words = title.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (lines.length >= 2) break;
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= 38) {
+      current = candidate;
+    } else {
+      if (current) lines.push(current);
+      current = word;
+    }
+  }
+  if (current && lines.length < 2) {
+    // Truncate if still too long
+    lines.push(current.length > 40 ? current.slice(0, 38) + '…' : current);
+  }
+  if (lines.length === 0) lines.push(title.slice(0, 38));
+
+  const titleY1 = lines.length === 2 ? 330 : 360;
+  const titleY2 = titleY1 + 80;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060911"/>
+      <stop offset="100%" stop-color="#0d0f1a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="15%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="${catColor}" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="${catColor}" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${catColor}"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid lines -->
+  <g stroke="#ffffff" stroke-opacity="0.03" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="240" y1="0" x2="240" y2="630"/>
+    <line x1="480" y1="0" x2="480" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/>
+    <line x1="960" y1="0" x2="960" y2="630"/>
+  </g>
+
+  <!-- Accent bar top -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Site label -->
+  <text x="60" y="90" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" opacity="0.5" letter-spacing="4">AIAGENTIC.NEWS</text>
+
+  <!-- Live dot -->
+  <circle cx="1120" cy="76" r="8" fill="#10b981"/>
+  <text x="1136" y="82" font-family="Arial, sans-serif" font-size="20" fill="#10b981" font-weight="600">LIVE</text>
+
+  <!-- Category chip -->
+  <rect x="60" y="${titleY1 - 68}" width="${category.length * 13 + 32}" height="36" rx="6" fill="${catColor}" opacity="0.2"/>
+  <rect x="60" y="${titleY1 - 68}" width="${category.length * 13 + 32}" height="36" rx="6" fill="none" stroke="${catColor}" stroke-width="1" opacity="0.6"/>
+  <text x="${76}" y="${titleY1 - 44}" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="${catColor}" letter-spacing="2">${category.toUpperCase()}</text>
+
+  <!-- Title line 1 -->
+  <text x="60" y="${titleY1}" font-family="Arial, sans-serif" font-size="64" font-weight="900" fill="#ffffff" opacity="0.95">${lines[0] || ''}</text>
+  ${lines[1] ? `<text x="60" y="${titleY2}" font-family="Arial, sans-serif" font-size="64" font-weight="900" fill="#ffffff" opacity="0.95">${lines[1]}</text>` : ''}
+
+  <!-- Bottom bar -->
+  <rect x="0" y="574" width="1200" height="56" fill="#ffffff" fill-opacity="0.03"/>
+  <text x="60" y="609" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" opacity="0.4">Curated from 13+ sources · Updated every 4 hours · Powered by AI</text>
+
+  <!-- Decorative circles -->
+  <circle cx="1100" cy="500" r="180" fill="${catColor}" fill-opacity="0.04"/>
+  <circle cx="1100" cy="500" r="120" fill="${catColor}" fill-opacity="0.04"/>
+</svg>`;
+}
+
 export default {
   async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
     await runPipeline(env);
@@ -186,6 +282,19 @@ export default {
 
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === '/og') {
+      const title = url.searchParams.get('title') || 'AI Agentic News';
+      const category = url.searchParams.get('category') || 'industry';
+      const svg = generateOgSvg(title, category);
+      return new Response(svg, {
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
 
     if (url.pathname === '/trigger' && request.method === 'POST') {
       // Pipeline runs via waitUntil — returns immediately.
