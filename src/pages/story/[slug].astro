@@ -36,8 +36,19 @@ const bodyText = story.content || story.summary;
 const wordCount = bodyText.split(/\s+/).length;
 const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
+// Strip stray markdown syntax from paragraphs
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, '')        // ## headers
+    .replace(/\*\*([^*]+)\*\*/g, '$1')  // **bold**
+    .replace(/\*([^*]+)\*/g, '$1')      // *italic*
+    .replace(/`([^`]+)`/g, '$1')        // `code`
+    .replace(/^\s*[-*]\s+/gm, '')       // - bullet points
+    .trim();
+}
+
 // Split on double newlines for natural paragraphs
-const paragraphs = bodyText.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+const paragraphs = bodyText.split(/\n\n+/).map(p => stripMarkdown(p.trim())).filter(Boolean);
 
 // First 2 sentences of summary for meta description
 const sentences = story.summary.split(/(?<=\.)\s+/);
@@ -76,6 +87,18 @@ const related = allStories
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         {readTime} min read
       </span>
+    </div>
+
+    <!-- Hero image -->
+    <div class="mb-8 rounded-xl overflow-hidden border border-[var(--color-border-subtle)]">
+      <img
+        src={ogImage}
+        alt={story.title}
+        width="1200"
+        height="630"
+        class="w-full h-auto block"
+        loading="eager"
+      />
     </div>
 
     <!-- Title -->

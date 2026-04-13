@@ -1,6 +1,33 @@
+---
+import { categories } from '../lib/categories';
+---
 <footer class="border-t border-[var(--color-border)] mt-16">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-    <p class="text-sm text-[var(--color-text-muted)]">&copy; {new Date().getFullYear()} AI Agentic News</p>
-    <p class="text-xs text-[var(--color-text-muted)]">Curated by AI from 13+ sources, every 4 hours</p>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid gap-8 sm:grid-cols-3 mb-8">
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3">Navigate</h3>
+        <ul class="space-y-2">
+          <li><a href="/" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">Home</a></li>
+          <li><a href="/about/" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">About</a></li>
+          <li><a href="/rss.xml" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">RSS Feed</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3">Categories</h3>
+        <ul class="space-y-2">
+          {categories.map((cat) => (
+            <li><a href={`/category/${cat.id}/`} class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">{cat.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-3">About</h3>
+        <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">AI Agentic News curates and synthesizes AI news from 13+ sources every 4 hours, fully automated via Cloudflare Workers AI.</p>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[var(--color-border-subtle)]">
+      <p class="text-sm text-[var(--color-text-muted)]">&copy; {new Date().getFullYear()} AI Agentic News</p>
+      <p class="text-xs text-[var(--color-text-muted)]">Curated by AI from 13+ sources, every 4 hours</p>
+    </div>
   </div>
 </footer>

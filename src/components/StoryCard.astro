@@ -9,6 +9,8 @@ interface Props {
 
 const { story } = Astro.props;
 const cat = getCategoryById(story.category);
+const WORKER = 'https://aiagentic-news-worker.sunnypat81.workers.dev';
+const ogImage = `${WORKER}/og?title=${encodeURIComponent(story.title)}&category=${story.category}`;
 
 const timeAgo = (() => {
   const diff = Date.now() - new Date(story.publishedAt).getTime();
@@ -23,7 +25,19 @@ const excerpt = story.summary.split('. ').slice(0, 2).join('. ') + '.';
 ---
 <a href={`/story/${story.slug}/`} class="group block">
   <GlowCard>
-    <article class="p-6 h-full">
+    <article class="h-full">
+      <!-- Card image -->
+      <div class="rounded-t-xl overflow-hidden">
+        <img
+          src={ogImage}
+          alt={story.title}
+          width="600"
+          height="315"
+          class="w-full h-auto block opacity-90 group-hover:opacity-100 transition-opacity"
+          loading="lazy"
+        />
+      </div>
+      <div class="p-5">
       <div class="flex items-center gap-3 mb-4">
         <span
           class="cat-badge px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider text-white/90"
@@ -50,6 +64,7 @@ const excerpt = story.summary.split('. ').slice(0, 2).join('. ') + '.';
           </span>
         ))}
         <span class="ml-auto text-xs text-[var(--color-accent)] opacity-0 group-hover:opacity-100 transition-opacity">Read →</span>
+      </div>
       </div>
     </article>
   </GlowCard>

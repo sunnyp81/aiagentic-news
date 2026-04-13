@@ -1,5 +1,6 @@
 ---
 import LivePulse from './LivePulse.astro';
+import { categories } from '../lib/categories';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -24,6 +25,12 @@ const navLinks = [
         {navLinks.map(({ href, label }) => (
           <a href={href} class="px-2.5 sm:px-3 py-1.5 rounded-lg text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-all">{label}</a>
         ))}
+        <div class="hidden md:flex items-center gap-0.5">
+          <span class="w-px h-4 bg-[var(--color-border)] mx-1"></span>
+          {categories.slice(0, 4).map((cat) => (
+            <a href={`/category/${cat.id}/`} class="px-2 py-1.5 rounded-lg text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-all">{cat.label.split(' ')[0]}</a>
+          ))}
+        </div>
       </nav>
     </div>
   </div>
