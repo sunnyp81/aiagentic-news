@@ -18,6 +18,7 @@ const digests = await getDigests();
 const latestDigest = digests[0];
 
 const featured = stories[0];
+const redirectTo = `${Astro.url.origin}/thank-you/`;
 const rest = stories.slice(1);
 
 const lastUpdated = stories.length > 0
@@ -176,7 +177,7 @@ const tickerItems = stories.slice(0, 8).map(s => s.title);
   <input type="hidden" name="_site" value="aiagentic.news" />
         <input type="hidden" name="accessKey" value="sf_9e906eb6c00416b9d3354749" />
         <input type="hidden" name="subject" value="Enquiry from aiagentic.news" />
-        <input type="hidden" name="redirectTo" value="https://aiagentic.news/?subscribed=1" />
+        <input type="hidden" name="redirectTo" value={redirectTo} />
         <input type="hidden" name="replyTo" value="@" />
         <input
           type="email"

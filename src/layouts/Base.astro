@@ -11,9 +11,10 @@ interface Props {
   description?: string;
   ogType?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
-const { title, description = 'AI news curated and synthesized daily from across the web.', ogType = 'website', ogImage } = Astro.props;
+const { title, description = 'AI news curated and synthesized daily from across the web.', ogType = 'website', ogImage, noindex = false } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const WORKER = 'https://aiagentic-news-worker.sunnypat81.workers.dev';
 const defaultOgImage = `${WORKER}/og?title=AI+Agentic+News&category=agents`;
@@ -27,6 +28,7 @@ const resolvedOgImage = ogImage || defaultOgImage;
   <title>{title} | AI Agentic News</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalUrl} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content={ogType} />
