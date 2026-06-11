@@ -24,6 +24,8 @@ jobs:
       - name: Build Astro site
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          # Preferred: scoped API token. Legacy Global API Key kept as fallback.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           CF_EMAIL: ${{ secrets.CF_EMAIL }}
           STORIES_NS_ID: ${{ secrets.STORIES_NS_ID }}
@@ -32,6 +34,9 @@ jobs:
 
       - name: Deploy to CF Pages
         env:
+          # wrangler uses CLOUDFLARE_API_TOKEN when set, otherwise the
+          # Global API Key + Email pair.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_API_KEY: ${{ secrets.CF_API_KEY }}
           CLOUDFLARE_EMAIL: ${{ secrets.CF_EMAIL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}

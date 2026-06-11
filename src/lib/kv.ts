@@ -3,6 +3,9 @@ import type { Story, Digest } from './types';
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID || '';
 const CF_API_KEY = process.env.CF_API_KEY || '';
 const CF_EMAIL = process.env.CF_EMAIL || '';
+// Preferred: a scoped API token (Bearer auth). Falls back to the legacy
+// Global API Key + Email if no token is provided.
+const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || process.env.CF_API_TOKEN || '';
 
 // KV namespace IDs — set after creating namespaces
 const STORIES_NS_ID = process.env.STORIES_NS_ID || '';
@@ -11,14 +14,20 @@ const DIGESTS_NS_ID = process.env.DIGESTS_NS_ID || '';
 const KV_BASE = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/storage/kv/namespaces`;
 
 function cfHeaders(): Record<string, string> {
+  if (CF_API_TOKEN) {
+    return { Authorization: `Bearer ${CF_API_TOKEN}` };
+  }
   return {
     'X-Auth-Key': CF_API_KEY,
     'X-Auth-Email': CF_EMAIL,
   };
 }
 
+// True when we have *some* credential to talk to the Cloudflare API.
+const HAS_CF_AUTH = Boolean(CF_API_TOKEN || CF_API_KEY);
+
 async function kvList(nsId: string, prefix?: string): Promise<{ name: string }[]> {
-  if (!CF_API_KEY || !nsId) return [];
+  if (!HAS_CF_AUTH || !nsId) return [];
 
   const params = new URLSearchParams({ limit: '1000' });
   if (prefix) params.set('prefix', prefix);
@@ -37,7 +46,7 @@ async function kvList(nsId: string, prefix?: string): Promise<{ name: string }[]
 }
 
 async function kvGet<T>(nsId: string, key: string): Promise<T | null> {
-  if (!CF_API_KEY || !nsId) return null;
+  if (!HAS_CF_AUTH || !nsId) return null;
 
   const res = await fetch(`${KV_BASE}/${nsId}/values/${encodeURIComponent(key)}`, {
     headers: cfHeaders(),
@@ -84,7 +93,7 @@ const DUMMY_DIGESTS: Digest[] = [
 ];
 
 function useDummyData(): boolean {
-  return !CF_API_KEY || !CF_ACCOUNT_ID || !STORIES_NS_ID;
+  return !HAS_CF_AUTH || !CF_ACCOUNT_ID || !STORIES_NS_ID;
 }
 
 export async function getStories(): Promise<Story[]> {
