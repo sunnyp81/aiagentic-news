@@ -36,6 +36,10 @@ const bodyText = story.content || story.summary;
 const wordCount = bodyText.split(/\s+/).length;
 const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
+// June 2026 spam-update defensive: noindex thin AI-synthesised stubs below the
+// 400-word Google News quality bar; substantive longer pieces stay indexed.
+const isThin = wordCount < 400;
+
 // Strip stray markdown syntax from paragraphs
 function stripMarkdown(text: string): string {
   return text
@@ -59,7 +63,7 @@ const related = allStories
   .filter((s) => s.category === story.category && s.slug !== story.slug)
   .slice(0, 3);
 ---
-<Base title={toTitleCase(story.title)} description={sentences.slice(0, 2).join(' ')} ogType="article" ogImage={ogImage}>
+<Base title={toTitleCase(story.title)} description={sentences.slice(0, 2).join(' ')} ogType="article" ogImage={ogImage} noindex={isThin}>
   <article class="max-w-3xl mx-auto">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 mb-8 text-sm">
